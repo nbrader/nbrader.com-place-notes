@@ -1,0 +1,8 @@
+Write a web app in elm which works for phone and mouse which allows you to create rectangular text notes by entering text into a field at the top, pressing add and then pressing somewhere on the screen. The resulting note can be dragged and dropped into new positions freely in 2d space. You can drag between notes to look around the space (unbounded size) and zoom with scroll/pinch.
+
+    drag the space between notes to expand or contract a bounded portion of the space the notes are on in a way that preserves their horizontal and vertical order
+    a save to file feature
+    a load from file feature
+    zoom with mouse wheel or pinch
+    
+    make it usable with mouse or with a phone
