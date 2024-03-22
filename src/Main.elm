@@ -3,7 +3,7 @@ module Main exposing (..)
 import Browser
 import Html exposing (Html, button, div, text)
 import Html.Attributes exposing (style)
-import Html.Events exposing (onClick, onMouseDown)
+import Html.Events exposing (onClick, onMouseDown, on, preventDefaultOn)
 import Json.Decode as Decode
 import Tuple exposing (pair)
 
@@ -46,6 +46,7 @@ type Msg
     | EndDrag
     | MouseMove (Int, Int)
     | MouseUp
+    | NoOp -- Add this line
 
 -- Simulated decoder for starting drag; assumes dragging starts anywhere
 mousePositionDecoder : Decode.Decoder Msg
@@ -114,13 +115,17 @@ update msg model =
                     Maybe.map (\rect -> { draggedRectId = rect.id, offsetX = mouseX - rect.x, offsetY = mouseY - rect.y }) maybeClickedRect
             in
             { model | dragging = newDraggingState }
+        
+        NoOp ->
+            model -- Do nothing
 
 -- VIEW
 view : Model -> Html Msg
 view model =
-    div [ Html.Attributes.style "width" "100%", Html.Attributes.style "height" "100vh"
-        , Html.Events.on "mousemove" mouseMoveDecoder
-        , Html.Events.on "mouseup" (Decode.succeed MouseUp)
+    div [ Html.Attributes.style "width" "100%"
+        , Html.Attributes.style "height" "100vh"
+        , Html.Events.on "mouseup" (Decode.succeed MouseUp) -- This ensures MouseUp is captured over the entire div
+        , Html.Events.on "mousemove" mouseMoveDecoder -- Consider if this should also be more broadly captured
         ]
         [ button [ onClick (AddRect (0, 0)) ] [ text "Add" ]
         , div [] (List.map rectangleView model.rects)
@@ -137,5 +142,12 @@ rectangleView rect =
         , style "background-color" "blue"
         , Html.Attributes.attribute "data-id" (String.fromInt rect.id)
         , Html.Events.on "mousedown" mousePositionDecoder
+        -- Prevent the default dragstart behavior
+        , preventDragStart
         ]
         []
+
+-- Decoder to ignore the dragstart event's default action
+preventDragStart : Html.Attribute Msg
+preventDragStart =
+    preventDefaultOn "dragstart" (Decode.succeed (NoOp, True))

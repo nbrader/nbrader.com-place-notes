@@ -5228,7 +5228,7 @@ var $author$project$Main$update = F2(
 				return _Utils_update(
 					model,
 					{y: $elm$core$Maybe$Nothing});
-			default:
+			case 1:
 				var _v4 = msg.a;
 				var mouseX = _v4.a;
 				var mouseY = _v4.b;
@@ -5260,6 +5260,8 @@ var $author$project$Main$update = F2(
 				return _Utils_update(
 					model,
 					{y: newDraggingState});
+			default:
+				return model;
 		}
 	});
 var $author$project$Main$AddRect = function (a) {
@@ -5319,6 +5321,22 @@ var $author$project$Main$mousePositionDecoder = A3(
 		}),
 	A2($elm$json$Json$Decode$field, 'clientX', $elm$json$Json$Decode$int),
 	A2($elm$json$Json$Decode$field, 'clientY', $elm$json$Json$Decode$int));
+var $author$project$Main$NoOp = {$: 5};
+var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
+	return {$: 2, a: a};
+};
+var $elm$html$Html$Events$preventDefaultOn = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
+	});
+var $author$project$Main$preventDragStart = A2(
+	$elm$html$Html$Events$preventDefaultOn,
+	'dragstart',
+	$elm$json$Json$Decode$succeed(
+		_Utils_Tuple2($author$project$Main$NoOp, true)));
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $author$project$Main$rectangleView = function (rect) {
@@ -5348,7 +5366,8 @@ var $author$project$Main$rectangleView = function (rect) {
 				$elm$html$Html$Attributes$attribute,
 				'data-id',
 				$elm$core$String$fromInt(rect.D)),
-				A2($elm$html$Html$Events$on, 'mousedown', $author$project$Main$mousePositionDecoder)
+				A2($elm$html$Html$Events$on, 'mousedown', $author$project$Main$mousePositionDecoder),
+				$author$project$Main$preventDragStart
 			]),
 		_List_Nil);
 };
@@ -5361,11 +5380,11 @@ var $author$project$Main$view = function (model) {
 			[
 				A2($elm$html$Html$Attributes$style, 'width', '100%'),
 				A2($elm$html$Html$Attributes$style, 'height', '100vh'),
-				A2($elm$html$Html$Events$on, 'mousemove', $author$project$Main$mouseMoveDecoder),
 				A2(
 				$elm$html$Html$Events$on,
 				'mouseup',
-				$elm$json$Json$Decode$succeed($author$project$Main$MouseUp))
+				$elm$json$Json$Decode$succeed($author$project$Main$MouseUp)),
+				A2($elm$html$Html$Events$on, 'mousemove', $author$project$Main$mouseMoveDecoder)
 			]),
 		_List_fromArray(
 			[
