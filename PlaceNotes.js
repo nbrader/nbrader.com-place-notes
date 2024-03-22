@@ -4451,7 +4451,7 @@ var $elm$core$Basics$EQ = 1;
 var $elm$core$Basics$GT = 2;
 var $elm$core$Basics$LT = 0;
 var $elm$core$Maybe$Nothing = {$: 1};
-var $author$project$Main$init = {y: $elm$core$Maybe$Nothing, F: 0, q: _List_Nil};
+var $author$project$Main$init = {C: $elm$core$Maybe$Nothing, F: 0, q: _List_Nil};
 var $elm$core$Result$Err = function (a) {
 	return {$: 1, a: a};
 };
@@ -5201,14 +5201,10 @@ var $author$project$Main$update = F2(
 						q: A2($elm$core$List$cons, newRect, model.q)
 					});
 			case 2:
-				return _Utils_update(
-					model,
-					{y: $elm$core$Maybe$Nothing});
-			case 3:
 				var _v2 = msg.a;
 				var mouseX = _v2.a;
 				var mouseY = _v2.b;
-				var _v3 = model.y;
+				var _v3 = model.C;
 				if (!_v3.$) {
 					var dragState = _v3.a;
 					var updatePosition = function (rect) {
@@ -5224,10 +5220,10 @@ var $author$project$Main$update = F2(
 				} else {
 					return model;
 				}
-			case 4:
+			case 3:
 				return _Utils_update(
 					model,
-					{y: $elm$core$Maybe$Nothing});
+					{C: $elm$core$Maybe$Nothing});
 			case 1:
 				var _v4 = msg.a;
 				var mouseX = _v4.a;
@@ -5259,7 +5255,7 @@ var $author$project$Main$update = F2(
 					maybeClickedRect);
 				return _Utils_update(
 					model,
-					{y: newDraggingState});
+					{C: newDraggingState});
 			default:
 				return model;
 		}
@@ -5267,11 +5263,11 @@ var $author$project$Main$update = F2(
 var $author$project$Main$AddRect = function (a) {
 	return {$: 0, a: a};
 };
-var $author$project$Main$MouseUp = {$: 4};
+var $author$project$Main$MouseUp = {$: 3};
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$Main$MouseMove = function (a) {
-	return {$: 3, a: a};
+	return {$: 2, a: a};
 };
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
@@ -5321,7 +5317,7 @@ var $author$project$Main$mousePositionDecoder = A3(
 		}),
 	A2($elm$json$Json$Decode$field, 'clientX', $elm$json$Json$Decode$int),
 	A2($elm$json$Json$Decode$field, 'clientY', $elm$json$Json$Decode$int));
-var $author$project$Main$NoOp = {$: 5};
+var $author$project$Main$NoOp = {$: 4};
 var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
 	return {$: 2, a: a};
 };

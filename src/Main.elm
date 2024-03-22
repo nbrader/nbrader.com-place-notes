@@ -43,7 +43,6 @@ init =
 type Msg
     = AddRect ( Int, Int )
     | MouseDown ( Int, Int ) -- Used when clicking to start dragging
-    | EndDrag
     | MouseMove (Int, Int)
     | MouseUp
     | NoOp -- Add this line
@@ -75,9 +74,6 @@ update msg model =
                     }
             in
             { model | rects = newRect :: model.rects, nextRectId = model.nextRectId + 1 }
-        
-        EndDrag ->
-            { model | dragging = Nothing }
         
         MouseMove (mouseX, mouseY) ->
             case model.dragging of
