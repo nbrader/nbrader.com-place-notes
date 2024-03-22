@@ -13,18 +13,18 @@ main =
 
 -- MODEL
 type alias Model =
-    { rectangles : List Rectangle
-    , nextRectangleId : Int
+    { rects : List Rect
+    , nextRectId : Int
     , dragging : Maybe DraggingState
     }
 
 type alias DraggingState =
-    { draggedId : Int
+    { draggedRectId : Int
     , offsetX : Int
     , offsetY : Int
     }
 
-type alias Rectangle =
+type alias Rect =
     { id : Int
     , x : Int
     , y : Int
@@ -34,14 +34,14 @@ type alias Rectangle =
 
 init : Model
 init =
-    { rectangles = []
-    , nextRectangleId = 0
+    { rects = []
+    , nextRectId = 0
     , dragging = Nothing
     }
 
 -- UPDATE
 type Msg
-    = AddRectangle ( Int, Int )
+    = AddRect ( Int, Int )
     | MouseDown ( Int, Int ) -- Used when clicking to start dragging
     | EndDrag
     | MouseMove (Int, Int)
@@ -63,17 +63,17 @@ mouseMoveDecoder =
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        AddRectangle (x, y) ->
+        AddRect (x, y) ->
             let
                 newRect =
-                    { id = model.nextRectangleId
+                    { id = model.nextRectId
                     , x = x - 50
                     , y = y - 25
                     , width = 100
                     , height = 50
                     }
             in
-            { model | rectangles = newRect :: model.rectangles, nextRectangleId = model.nextRectangleId + 1 }
+            { model | rects = newRect :: model.rects, nextRectId = model.nextRectId + 1 }
         
         EndDrag ->
             { model | dragging = Nothing }
@@ -83,13 +83,13 @@ update msg model =
                 Just dragState ->
                     let
                         updatePosition rect =
-                            if rect.id == dragState.draggedId then
+                            if rect.id == dragState.draggedRectId then
                                 -- Apply offsets to keep the rectangle under the cursor as it was at the start of the drag
                                 { rect | x = mouseX - dragState.offsetX, y = mouseY - dragState.offsetY }
                             else
                                 rect
                     in
-                    { model | rectangles = List.map updatePosition model.rectangles }
+                    { model | rects = List.map updatePosition model.rects }
                 Nothing ->
                     model
             
@@ -109,9 +109,9 @@ update msg model =
                             else
                                 findClickedRect rest
 
-                maybeClickedRect = findClickedRect model.rectangles
+                maybeClickedRect = findClickedRect model.rects
                 newDraggingState =
-                    Maybe.map (\rect -> { draggedId = rect.id, offsetX = mouseX - rect.x, offsetY = mouseY - rect.y }) maybeClickedRect
+                    Maybe.map (\rect -> { draggedRectId = rect.id, offsetX = mouseX - rect.x, offsetY = mouseY - rect.y }) maybeClickedRect
             in
             { model | dragging = newDraggingState }
 
@@ -122,11 +122,11 @@ view model =
         , Html.Events.on "mousemove" mouseMoveDecoder
         , Html.Events.on "mouseup" (Decode.succeed MouseUp)
         ]
-        [ button [ onClick (AddRectangle (0, 0)) ] [ text "Add" ]
-        , div [] (List.map rectangleView model.rectangles)
+        [ button [ onClick (AddRect (0, 0)) ] [ text "Add" ]
+        , div [] (List.map rectangleView model.rects)
         ]
 
-rectangleView : Rectangle -> Html Msg
+rectangleView : Rect -> Html Msg
 rectangleView rect =
     div
         [ style "position" "absolute"

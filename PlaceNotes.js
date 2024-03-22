@@ -5262,7 +5262,7 @@ var $author$project$Main$update = F2(
 					{y: newDraggingState});
 		}
 	});
-var $author$project$Main$AddRectangle = function (a) {
+var $author$project$Main$AddRect = function (a) {
 	return {$: 0, a: a};
 };
 var $author$project$Main$MouseUp = {$: 4};
@@ -5374,7 +5374,7 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						$elm$html$Html$Events$onClick(
-						$author$project$Main$AddRectangle(
+						$author$project$Main$AddRect(
 							_Utils_Tuple2(0, 0)))
 					]),
 				_List_fromArray(
