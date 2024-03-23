@@ -5176,9 +5176,9 @@ var $elm$browser$Browser$sandbox = function (impl) {
 		});
 };
 var $elm$core$Basics$ge = _Utils_ge;
-var $author$project$Main$findClickedRect = F2(
+var $author$project$Main$findClickedRectangle = F2(
 	function (rects, _v0) {
-		findClickedRect:
+		findClickedRectangle:
 		while (true) {
 			var mouseX = _v0.a;
 			var mouseY = _v0.b;
@@ -5194,7 +5194,7 @@ var $author$project$Main$findClickedRect = F2(
 						$temp$_v0 = _Utils_Tuple2(mouseX, mouseY);
 					rects = $temp$rects;
 					_v0 = $temp$_v0;
-					continue findClickedRect;
+					continue findClickedRectangle;
 				}
 			}
 		}
@@ -5205,7 +5205,7 @@ var $author$project$Main$initiateDraggingState = F2(
 		var mouseY = _v0.b;
 		return {M: rect.D, O: mouseX - rect.w, P: mouseY - rect.x};
 	});
-var $author$project$Main$updateRectPosition = F3(
+var $author$project$Main$updateRectanglePosition = F3(
 	function (_v0, dragState, rect) {
 		var mouseX = _v0.a;
 		var mouseY = _v0.b;
@@ -5220,12 +5220,12 @@ var $author$project$Main$update = F2(
 				var _v1 = msg.a;
 				var x = _v1.a;
 				var y = _v1.b;
-				var newRect = {K: 50, D: model.F, L: 100, w: x - 50, x: y - 25};
+				var newRectangle = {K: 50, D: model.F, L: 100, w: x - 50, x: y - 25};
 				return _Utils_update(
 					model,
 					{
 						F: model.F + 1,
-						q: A2($elm$core$List$cons, newRect, model.q)
+						q: A2($elm$core$List$cons, newRectangle, model.q)
 					});
 			case 2:
 				var _v2 = msg.a;
@@ -5240,7 +5240,7 @@ var $author$project$Main$update = F2(
 							q: A2(
 								$elm$core$List$map,
 								A2(
-									$author$project$Main$updateRectPosition,
+									$author$project$Main$updateRectanglePosition,
 									_Utils_Tuple2(mouseX, mouseY),
 									dragState),
 								model.q)
@@ -5256,12 +5256,12 @@ var $author$project$Main$update = F2(
 				var _v4 = msg.a;
 				var mouseX = _v4.a;
 				var mouseY = _v4.b;
-				var maybeClickedRect = A2(
-					$author$project$Main$findClickedRect,
+				var maybeClickedRectangle = A2(
+					$author$project$Main$findClickedRectangle,
 					model.q,
 					_Utils_Tuple2(mouseX, mouseY));
-				if (!maybeClickedRect.$) {
-					var rect = maybeClickedRect.a;
+				if (!maybeClickedRectangle.$) {
+					var rect = maybeClickedRectangle.a;
 					return _Utils_update(
 						model,
 						{
@@ -5278,7 +5278,7 @@ var $author$project$Main$update = F2(
 				return model;
 		}
 	});
-var $author$project$Main$AddRect = function (a) {
+var $author$project$Main$AddRectangle = function (a) {
 	return {$: 0, a: a};
 };
 var $author$project$Main$MouseUp = {$: 3};
@@ -5407,7 +5407,7 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						$elm$html$Html$Events$onClick(
-						$author$project$Main$AddRect(
+						$author$project$Main$AddRectangle(
 							_Utils_Tuple2(0, 0)))
 					]),
 				_List_fromArray(
