@@ -120,7 +120,7 @@ view model =
         , Html.Events.on "mouseup" (Decode.succeed MouseUp) -- This ensures MouseUp is captured over the entire div
         , Html.Events.on "mousemove" mouseMoveDecoder -- Consider if this should also be more broadly captured
         ]
-        [ button [ onClick (AddRectangle (0, 0)) ] [ text "Add" ]
+        [ button [ onClick (AddRectangle (100, 60)) ] [ text "Add" ]
         , div [] (List.map rectangleView model.rects)
         ]
 

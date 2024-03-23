@@ -5408,7 +5408,7 @@ var $author$project$Main$view = function (model) {
 					[
 						$elm$html$Html$Events$onClick(
 						$author$project$Main$AddRectangle(
-							_Utils_Tuple2(0, 0)))
+							_Utils_Tuple2(100, 60)))
 					]),
 				_List_fromArray(
 					[
