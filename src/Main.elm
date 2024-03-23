@@ -42,15 +42,14 @@ init =
 -- UPDATE
 type Msg
     = AddRect ( Int, Int )
-    | MouseDown ( Int, Int ) -- Used when clicking to start dragging
+    | MouseDown ( Int, Int )
     | MouseMove (Int, Int)
     | MouseUp
-    | NoOp -- Add this line
+    | NoOp
 
--- Simulated decoder for starting drag; assumes dragging starts anywhere
 mousePositionDecoder : Decode.Decoder Msg
 mousePositionDecoder =
-    Decode.map2 (\x y -> MouseDown (x, y)) -- Changed to MouseDown for clarity
+    Decode.map2 (\x y -> MouseDown (x, y))
         (Decode.field "clientX" Decode.int)
         (Decode.field "clientY" Decode.int)
 
@@ -81,7 +80,6 @@ update msg model =
                     let
                         updatePosition rect =
                             if rect.id == dragState.draggedRectId then
-                                -- Apply offsets to keep the rectangle under the cursor as it was at the start of the drag
                                 { rect | x = mouseX - dragState.offsetX, y = mouseY - dragState.offsetY }
                             else
                                 rect
@@ -138,8 +136,7 @@ rectangleView rect =
         , style "background-color" "blue"
         , Html.Attributes.attribute "data-id" (String.fromInt rect.id)
         , Html.Events.on "mousedown" mousePositionDecoder
-        -- Prevent the default dragstart behavior
-        , preventDragStart
+        , preventDragStart -- Prevents the default dragstart behaviour
         ]
         []
 
