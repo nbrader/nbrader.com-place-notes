@@ -77,14 +77,7 @@ update msg model =
         MouseMove (mouseX, mouseY) ->
             case model.dragging of
                 Just dragState ->
-                    let
-                        updatePosition rect =
-                            if rect.id == dragState.draggedRectId then
-                                { rect | x = mouseX - dragState.offsetX, y = mouseY - dragState.offsetY }
-                            else
-                                rect
-                    in
-                    { model | rects = List.map updatePosition model.rects }
+                    { model | rects = List.map (updateRectPosition (mouseX, mouseY) dragState) model.rects }
                 Nothing ->
                     model
             
@@ -93,25 +86,43 @@ update msg model =
         
         MouseDown (mouseX, mouseY) ->
             let
-                findClickedRect rects =
-                    case rects of
-                        [] ->
-                            Nothing
-                        rect :: rest ->
-                            if mouseX >= rect.x && mouseX <= rect.x + rect.width &&
-                               mouseY >= rect.y && mouseY <= rect.y + rect.height then
-                                Just rect
-                            else
-                                findClickedRect rest
-
-                maybeClickedRect = findClickedRect model.rects
-                newDraggingState =
-                    Maybe.map (\rect -> { draggedRectId = rect.id, offsetX = mouseX - rect.x, offsetY = mouseY - rect.y }) maybeClickedRect
+                maybeClickedRect = findClickedRect model.rects (mouseX, mouseY)
             in
-            { model | dragging = newDraggingState }
+            case maybeClickedRect of
+                Just rect ->
+                    { model | dragging = Just (initiateDraggingState (mouseX, mouseY) rect) }
+                Nothing ->
+                    model
         
         NoOp ->
             model -- Do nothing
+
+-- Find a rectangle that has been clicked based on the mouse position
+findClickedRect : List Rect -> (Int, Int) -> Maybe Rect
+findClickedRect rects (mouseX, mouseY) =
+    case rects of
+        [] ->
+            Nothing
+        rect :: rest ->
+            if mouseX >= rect.x && mouseX <= rect.x + rect.width &&
+               mouseY >= rect.y && mouseY <= rect.y + rect.height then
+                Just rect
+            else
+                findClickedRect rest (mouseX, mouseY)
+
+-- Update position of a rectangle based on the current mouse position
+-- and the dragging state
+updateRectPosition : (Int, Int) -> DraggingState -> Rect -> Rect
+updateRectPosition (mouseX, mouseY) dragState rect =
+    if rect.id == dragState.draggedRectId then
+        { rect | x = mouseX - dragState.offsetX, y = mouseY - dragState.offsetY }
+    else
+        rect
+
+-- Update the dragging state based on the clicked rectangle
+initiateDraggingState : (Int, Int) -> Rect -> DraggingState
+initiateDraggingState (mouseX, mouseY) rect =
+    { draggedRectId = rect.id, offsetX = mouseX - rect.x, offsetY = mouseY - rect.y }
 
 -- VIEW
 view : Model -> Html Msg

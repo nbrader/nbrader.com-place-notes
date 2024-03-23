@@ -5176,15 +5176,42 @@ var $elm$browser$Browser$sandbox = function (impl) {
 		});
 };
 var $elm$core$Basics$ge = _Utils_ge;
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (!maybe.$) {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
+var $author$project$Main$findClickedRect = F2(
+	function (rects, _v0) {
+		findClickedRect:
+		while (true) {
+			var mouseX = _v0.a;
+			var mouseY = _v0.b;
+			if (!rects.b) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var rect = rects.a;
+				var rest = rects.b;
+				if ((_Utils_cmp(mouseX, rect.w) > -1) && ((_Utils_cmp(mouseX, rect.w + rect.L) < 1) && ((_Utils_cmp(mouseY, rect.x) > -1) && (_Utils_cmp(mouseY, rect.x + rect.K) < 1)))) {
+					return $elm$core$Maybe$Just(rect);
+				} else {
+					var $temp$rects = rest,
+						$temp$_v0 = _Utils_Tuple2(mouseX, mouseY);
+					rects = $temp$rects;
+					_v0 = $temp$_v0;
+					continue findClickedRect;
+				}
+			}
 		}
+	});
+var $author$project$Main$initiateDraggingState = F2(
+	function (_v0, rect) {
+		var mouseX = _v0.a;
+		var mouseY = _v0.b;
+		return {M: rect.D, O: mouseX - rect.w, P: mouseY - rect.x};
+	});
+var $author$project$Main$updateRectPosition = F3(
+	function (_v0, dragState, rect) {
+		var mouseX = _v0.a;
+		var mouseY = _v0.b;
+		return _Utils_eq(rect.D, dragState.M) ? _Utils_update(
+			rect,
+			{w: mouseX - dragState.O, x: mouseY - dragState.P}) : rect;
 	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
@@ -5207,15 +5234,16 @@ var $author$project$Main$update = F2(
 				var _v3 = model.C;
 				if (!_v3.$) {
 					var dragState = _v3.a;
-					var updatePosition = function (rect) {
-						return _Utils_eq(rect.D, dragState.M) ? _Utils_update(
-							rect,
-							{w: mouseX - dragState.O, x: mouseY - dragState.P}) : rect;
-					};
 					return _Utils_update(
 						model,
 						{
-							q: A2($elm$core$List$map, updatePosition, model.q)
+							q: A2(
+								$elm$core$List$map,
+								A2(
+									$author$project$Main$updateRectPosition,
+									_Utils_Tuple2(mouseX, mouseY),
+									dragState),
+								model.q)
 						});
 				} else {
 					return model;
@@ -5228,34 +5256,24 @@ var $author$project$Main$update = F2(
 				var _v4 = msg.a;
 				var mouseX = _v4.a;
 				var mouseY = _v4.b;
-				var findClickedRect = function (rects) {
-					findClickedRect:
-					while (true) {
-						if (!rects.b) {
-							return $elm$core$Maybe$Nothing;
-						} else {
-							var rect = rects.a;
-							var rest = rects.b;
-							if ((_Utils_cmp(mouseX, rect.w) > -1) && ((_Utils_cmp(mouseX, rect.w + rect.L) < 1) && ((_Utils_cmp(mouseY, rect.x) > -1) && (_Utils_cmp(mouseY, rect.x + rect.K) < 1)))) {
-								return $elm$core$Maybe$Just(rect);
-							} else {
-								var $temp$rects = rest;
-								rects = $temp$rects;
-								continue findClickedRect;
-							}
-						}
-					}
-				};
-				var maybeClickedRect = findClickedRect(model.q);
-				var newDraggingState = A2(
-					$elm$core$Maybe$map,
-					function (rect) {
-						return {M: rect.D, O: mouseX - rect.w, P: mouseY - rect.x};
-					},
-					maybeClickedRect);
-				return _Utils_update(
-					model,
-					{C: newDraggingState});
+				var maybeClickedRect = A2(
+					$author$project$Main$findClickedRect,
+					model.q,
+					_Utils_Tuple2(mouseX, mouseY));
+				if (!maybeClickedRect.$) {
+					var rect = maybeClickedRect.a;
+					return _Utils_update(
+						model,
+						{
+							C: $elm$core$Maybe$Just(
+								A2(
+									$author$project$Main$initiateDraggingState,
+									_Utils_Tuple2(mouseX, mouseY),
+									rect))
+						});
+				} else {
+					return model;
+				}
 			default:
 				return model;
 		}
