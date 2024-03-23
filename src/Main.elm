@@ -47,18 +47,6 @@ type Msg
     | MouseUp
     | NoOp
 
-mousePositionDecoder : Decode.Decoder Msg
-mousePositionDecoder =
-    Decode.map2 (\x y -> MouseDown (x, y))
-        (Decode.field "clientX" Decode.int)
-        (Decode.field "clientY" Decode.int)
-
-mouseMoveDecoder : Decode.Decoder Msg
-mouseMoveDecoder =
-    Decode.map2 (\clientX clientY -> MouseMove (clientX, clientY))
-        (Decode.field "clientX" Decode.int)
-        (Decode.field "clientY" Decode.int)
-
 update : Msg -> Model -> Model
 update msg model =
     case msg of
@@ -150,6 +138,18 @@ rectangleView rect =
         , preventDragStart -- Prevents the default dragstart behaviour
         ]
         []
+
+mouseMoveDecoder : Decode.Decoder Msg
+mouseMoveDecoder =
+    Decode.map2 (\clientX clientY -> MouseMove (clientX, clientY))
+        (Decode.field "clientX" Decode.int)
+        (Decode.field "clientY" Decode.int)
+
+mousePositionDecoder : Decode.Decoder Msg
+mousePositionDecoder =
+    Decode.map2 (\x y -> MouseDown (x, y))
+        (Decode.field "clientX" Decode.int)
+        (Decode.field "clientY" Decode.int)
 
 -- Decoder to ignore the dragstart event's default action
 preventDragStart : Html.Attribute Msg
