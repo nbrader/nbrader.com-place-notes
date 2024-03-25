@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.ab.L === region.ag.L)
+	if (region.ab.M === region.ag.M)
 	{
-		return 'on line ' + region.ab.L;
+		return 'on line ' + region.ab.M;
 	}
-	return 'on lines ' + region.ab.L + ' through ' + region.ag.L;
+	return 'on lines ' + region.ab.M + ' through ' + region.ag.M;
 }
 
 
@@ -4251,8 +4251,8 @@ function _Browser_getViewport()
 		az: {
 			n: _Browser_window.pageXOffset,
 			o: _Browser_window.pageYOffset,
-			Q: _Browser_doc.documentElement.clientWidth,
-			K: _Browser_doc.documentElement.clientHeight
+			I: _Browser_doc.documentElement.clientWidth,
+			L: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4262,8 +4262,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		Q: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		K: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		I: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		L: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4287,14 +4287,14 @@ function _Browser_getViewportOf(id)
 	{
 		return {
 			aw: {
-				Q: node.scrollWidth,
-				K: node.scrollHeight
+				I: node.scrollWidth,
+				L: node.scrollHeight
 			},
 			az: {
 				n: node.scrollLeft,
 				o: node.scrollTop,
-				Q: node.clientWidth,
-				K: node.clientHeight
+				I: node.clientWidth,
+				L: node.clientHeight
 			}
 		};
 	});
@@ -4328,14 +4328,14 @@ function _Browser_getElement(id)
 			az: {
 				n: x,
 				o: y,
-				Q: _Browser_doc.documentElement.clientWidth,
-				K: _Browser_doc.documentElement.clientHeight
+				I: _Browser_doc.documentElement.clientWidth,
+				L: _Browser_doc.documentElement.clientHeight
 			},
 			aF: {
 				n: x + rect.left,
 				o: y + rect.top,
-				Q: rect.width,
-				K: rect.height
+				I: rect.width,
+				L: rect.height
 			}
 		};
 	});
@@ -4453,7 +4453,7 @@ var $elm$core$Basics$LT = 0;
 var $author$project$Main$MoveMode = 0;
 var $elm$core$Maybe$Nothing = {$: 1};
 var $elm$core$Basics$True = 0;
-var $author$project$Main$init = {J: true, s: 0, t: 0, u: $elm$core$Maybe$Nothing, z: 0, R: 0, C: 'Write a note here.', g: _List_Nil, F: $elm$core$Maybe$Nothing};
+var $author$project$Main$init = {K: true, s: 0, t: 0, u: $elm$core$Maybe$Nothing, A: 0, S: 0, x: 'Write a note here.', e: _List_Nil, D: $elm$core$Maybe$Nothing};
 var $elm$core$Result$Err = function (a) {
 	return {$: 1, a: a};
 };
@@ -5183,6 +5183,9 @@ var $author$project$Main$DraggingCamera = function (a) {
 var $author$project$Main$DraggingRectangle = function (a) {
 	return {$: 0, a: a};
 };
+var $author$project$Main$calculateTextWidth = function (text) {
+	return 8 * $elm$core$String$length(text);
+};
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
 		return A3(
@@ -5206,7 +5209,7 @@ var $author$project$Main$findClickedRectangle = F2(
 			} else {
 				var rect = rects.a;
 				var rest = rects.b;
-				if ((_Utils_cmp(mouseX, rect.n) > -1) && ((_Utils_cmp(mouseX, rect.n + rect.Q) < 1) && ((_Utils_cmp(mouseY, rect.o) > -1) && (_Utils_cmp(mouseY, rect.o + rect.K) < 1)))) {
+				if ((_Utils_cmp(mouseX, rect.n) > -1) && ((_Utils_cmp(mouseX, rect.n + rect.I) < 1) && ((_Utils_cmp(mouseY, rect.o) > -1) && (_Utils_cmp(mouseY, rect.o + rect.L) < 1)))) {
 					return $elm$core$Maybe$Just(rect);
 				} else {
 					var $temp$rects = rest,
@@ -5231,7 +5234,7 @@ var $author$project$Main$isClickedRectangle = F2(
 	function (_v0, rect) {
 		var mouseX = _v0.a;
 		var mouseY = _v0.b;
-		return (_Utils_cmp(mouseX, rect.n) > -1) && ((_Utils_cmp(mouseX, rect.n + rect.Q) < 1) && ((_Utils_cmp(mouseY, rect.o) > -1) && (_Utils_cmp(mouseY, rect.o + rect.K) < 1)));
+		return (_Utils_cmp(mouseX, rect.n) > -1) && ((_Utils_cmp(mouseX, rect.n + rect.I) < 1) && ((_Utils_cmp(mouseY, rect.o) > -1) && (_Utils_cmp(mouseY, rect.o + rect.L) < 1)));
 	});
 var $elm$core$Maybe$map = F2(
 	function (f, maybe) {
@@ -5250,7 +5253,7 @@ var $author$project$Main$updateRectanglePosition = F4(
 		var mouseY = _v0.b;
 		var offsetX = _v1.a;
 		var offsetY = _v1.b;
-		return _Utils_eq(rect.k, draggedRectangleId) ? _Utils_update(
+		return _Utils_eq(rect.j, draggedRectangleId) ? _Utils_update(
 			rect,
 			{n: mouseX - offsetX, o: mouseY - offsetY}) : rect;
 	});
@@ -5269,61 +5272,81 @@ var $author$project$Main$update = F2(
 			case 7:
 				return _Utils_update(
 					model,
-					{J: false});
+					{K: false});
 			case 5:
-				var _v1 = model.z;
+				var _v1 = model.A;
 				if (!_v1) {
 					return _Utils_update(
 						model,
-						{z: 1});
+						{A: 1});
 				} else {
 					return _Utils_update(
 						model,
-						{z: 0});
+						{A: 0});
 				}
 			case 1:
 				var newText = msg.a;
+				var updatedRects = function () {
+					var _v2 = model.D;
+					if (!_v2.$) {
+						var selectedId = _v2.a;
+						return A2(
+							$elm$core$List$map,
+							function (rect) {
+								return _Utils_eq(rect.j, selectedId) ? _Utils_update(
+									rect,
+									{
+										O: newText,
+										I: $author$project$Main$calculateTextWidth(newText)
+									}) : rect;
+							},
+							model.e);
+					} else {
+						return model.e;
+					}
+				}();
 				return _Utils_update(
 					model,
-					{C: newText});
+					{x: newText, e: updatedRects});
 			case 0:
-				var _v2 = msg.a;
-				var x = _v2.a;
-				var y = _v2.b;
-				var newRectangleId = model.R;
-				var newRectangle = {K: 50, k: newRectangleId, S: model.C, Q: 100, n: x - 50, o: y - 25};
+				var _v3 = msg.a;
+				var x = _v3.a;
+				var y = _v3.b;
+				var textWidth = $author$project$Main$calculateTextWidth(model.x);
+				var newRectangleId = model.S;
+				var newRectangle = {L: 50, j: newRectangleId, O: model.x, I: textWidth, n: x - textWidth, o: y - 25};
 				return _Utils_update(
 					model,
 					{
-						R: newRectangleId + 1,
-						g: A2($elm$core$List$cons, newRectangle, model.g),
-						F: $elm$core$Maybe$Just(newRectangleId)
+						S: newRectangleId + 1,
+						e: A2($elm$core$List$cons, newRectangle, model.e),
+						D: $elm$core$Maybe$Just(newRectangleId)
 					});
 			case 3:
-				var _v3 = msg.a;
-				var mouseX = _v3.a;
-				var mouseY = _v3.b;
-				var _v4 = model.u;
-				if (!_v4.$) {
-					if (!_v4.a.$) {
-						var draggedRectangleId = _v4.a.a.T;
-						var offsetX = _v4.a.a.X;
-						var offsetY = _v4.a.a.Y;
+				var _v4 = msg.a;
+				var mouseX = _v4.a;
+				var mouseY = _v4.b;
+				var _v5 = model.u;
+				if (!_v5.$) {
+					if (!_v5.a.$) {
+						var draggedRectangleId = _v5.a.a.T;
+						var offsetX = _v5.a.a.X;
+						var offsetY = _v5.a.a.Y;
 						return _Utils_update(
 							model,
 							{
-								g: A2(
+								e: A2(
 									$elm$core$List$map,
 									A3(
 										$author$project$Main$updateRectanglePosition,
 										_Utils_Tuple2(mouseX, mouseY),
 										draggedRectangleId,
 										_Utils_Tuple2(offsetX, offsetY)),
-									model.g)
+									model.e)
 							});
 					} else {
-						var initialX = _v4.a.a.U;
-						var initialY = _v4.a.a.V;
+						var initialX = _v5.a.a.U;
+						var initialY = _v5.a.a.V;
 						var dy = mouseY - initialY;
 						var dx = mouseX - initialX;
 						return _Utils_update(
@@ -5342,15 +5365,15 @@ var $author$project$Main$update = F2(
 			case 4:
 				return _Utils_update(
 					model,
-					{J: true, u: $elm$core$Maybe$Nothing});
+					{K: true, u: $elm$core$Maybe$Nothing});
 			case 2:
-				var _v5 = msg.a;
-				var mouseX = _v5.a;
-				var mouseY = _v5.b;
-				if (model.J) {
-					var _v6 = model.z;
-					if (_v6 === 1) {
-						var reversedRects = $elm$core$List$reverse(model.g);
+				var _v6 = msg.a;
+				var mouseX = _v6.a;
+				var mouseY = _v6.b;
+				if (model.K) {
+					var _v7 = model.A;
+					if (_v7 === 1) {
+						var reversedRects = $elm$core$List$reverse(model.e);
 						var clickedRect = $elm$core$List$head(
 							A2(
 								$elm$core$List$filter,
@@ -5367,30 +5390,30 @@ var $author$project$Main$update = F2(
 								return A2(
 									$elm$core$List$filter,
 									function (rect) {
-										return !_Utils_eq(rect.k, rectToBeRemoved.k);
+										return !_Utils_eq(rect.j, rectToBeRemoved.j);
 									},
-									model.g);
+									model.e);
 							} else {
-								return model.g;
+								return model.e;
 							}
 						}();
 						return _Utils_update(
 							model,
-							{g: updatedRects});
+							{e: updatedRects});
 					} else {
-						var _v8 = A2(
+						var _v9 = A2(
 							$author$project$Main$findClickedRectangle,
-							model.g,
+							model.e,
 							_Utils_Tuple2(mouseX - model.s, mouseY - model.t));
-						if (!_v8.$) {
-							var rect = _v8.a;
+						if (!_v9.$) {
+							var rect = _v9.a;
 							return _Utils_update(
 								model,
 								{
 									u: $elm$core$Maybe$Just(
 										$author$project$Main$DraggingRectangle(
-											{T: rect.k, X: mouseX - rect.n, Y: mouseY - rect.o})),
-									F: $elm$core$Maybe$Just(rect.k)
+											{T: rect.j, X: mouseX - rect.n, Y: mouseY - rect.o})),
+									D: $elm$core$Maybe$Just(rect.j)
 								});
 						} else {
 							return _Utils_update(
@@ -5408,27 +5431,27 @@ var $author$project$Main$update = F2(
 						{u: $elm$core$Maybe$Nothing});
 				}
 			case 8:
-				var _v9 = model.F;
-				if (!_v9.$) {
-					var selectedId = _v9.a;
+				var _v10 = model.D;
+				if (!_v10.$) {
+					var selectedId = _v10.a;
 					var selectedRectText = A2(
 						$elm$core$Maybe$withDefault,
-						model.C,
+						model.x,
 						A2(
 							$elm$core$Maybe$map,
 							function (rect) {
-								return rect.S;
+								return rect.O;
 							},
 							$elm$core$List$head(
 								A2(
 									$elm$core$List$filter,
 									function (rect) {
-										return _Utils_eq(rect.k, selectedId);
+										return _Utils_eq(rect.j, selectedId);
 									},
-									model.g))));
+									model.e))));
 					return _Utils_update(
 						model,
-						{C: selectedRectText});
+						{x: selectedRectText});
 				} else {
 					return model;
 				}
@@ -5576,11 +5599,11 @@ var $author$project$Main$rectangleView = F2(
 					A2(
 					$elm$html$Html$Attributes$style,
 					'width',
-					$elm$core$String$fromInt(rect.Q) + 'px'),
+					$elm$core$String$fromInt(rect.I) + 'px'),
 					A2(
 					$elm$html$Html$Attributes$style,
 					'height',
-					$elm$core$String$fromInt(rect.K) + 'px'),
+					$elm$core$String$fromInt(rect.L) + 'px'),
 					A2($elm$html$Html$Attributes$style, 'background-color', 'blue'),
 					A2($elm$html$Html$Attributes$style, 'color', 'white'),
 					A2($elm$html$Html$Attributes$style, 'display', 'flex'),
@@ -5590,16 +5613,16 @@ var $author$project$Main$rectangleView = F2(
 					$elm$html$Html$Attributes$style,
 					'border',
 					_Utils_eq(
-						$elm$core$Maybe$Just(rect.k),
-						model.F) ? '4px solid red' : '1px solid black'),
+						$elm$core$Maybe$Just(rect.j),
+						model.D) ? '4px solid red' : '1px solid black'),
 					A2(
 					$elm$html$Html$Attributes$attribute,
 					'data-id',
-					$elm$core$String$fromInt(rect.k))
+					$elm$core$String$fromInt(rect.j))
 				]),
 			_List_fromArray(
 				[
-					$elm$html$Html$text(rect.S)
+					$elm$html$Html$text(rect.O)
 				]));
 	});
 var $elm$json$Json$Encode$string = _Json_wrap;
@@ -5635,7 +5658,7 @@ var $author$project$Main$view = function (model) {
 					[
 						$elm$html$Html$Events$onMouseDown($author$project$Main$PreventDrag),
 						$elm$html$Html$Attributes$type_('text'),
-						$elm$html$Html$Attributes$value(model.C),
+						$elm$html$Html$Attributes$value(model.x),
 						$elm$html$Html$Events$onInput($author$project$Main$UpdateRectText)
 					]),
 				_List_Nil),
@@ -5662,7 +5685,7 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						$elm$html$Html$text(
-						(!model.z) ? 'Switch to Deletion Mode' : 'Switch to Move Mode')
+						(!model.A) ? 'Switch to Deletion Mode' : 'Switch to Move Mode')
 					])),
 				A2(
 				$elm$html$Html$button,
@@ -5683,7 +5706,7 @@ var $author$project$Main$view = function (model) {
 					function (rect) {
 						return A2($author$project$Main$rectangleView, model, rect);
 					},
-					model.g))
+					model.e))
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$sandbox(

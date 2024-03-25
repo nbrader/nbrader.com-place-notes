@@ -83,15 +83,26 @@ update msg model =
                     { model | mode = MoveMode }
         
         UpdateRectText newText ->
-            { model | rectText = newText }
-
+            let
+                updatedRects = 
+                    case model.selectedRectangleId of
+                        Just selectedId ->
+                            List.map (\rect -> if rect.id == selectedId then { rect | text = newText, width = calculateTextWidth newText } else rect) model.rects
+                        Nothing ->
+                            model.rects
+            in
+            { model | rectText = newText, rects = updatedRects }
+        
         AddRectangle (x, y) ->
             let
+                textWidth = calculateTextWidth model.rectText
                 newRectangleId = model.nextRectangleId
                 newRectangle =
                     { id = newRectangleId
-                    , x = x - 50, y = y - 25
-                    , width = 100, height = 50
+                    , x = x - textWidth -- Adjust based on new width calculation
+                    , y = y - 25
+                    , width = textWidth
+                    , height = 50 -- Keep height static or adjust similarly
                     , text = model.rectText
                     }
             in
@@ -153,6 +164,10 @@ update msg model =
         
         NoOp ->
             model -- Do nothing
+
+calculateTextWidth : String -> Int
+calculateTextWidth text =
+    8 * String.length text -- 8 is an arbitrary number representing average character width in pixels
 
 -- Helper function to check if a rectangle was clicked
 isClickedRectangle : (Int, Int) -> Rectangle -> Bool
