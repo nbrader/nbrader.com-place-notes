@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region._.J === region.af.J)
+	if (region.aa.J === region.ag.J)
 	{
-		return 'on line ' + region._.J;
+		return 'on line ' + region.aa.J;
 	}
-	return 'on lines ' + region._.J + ' through ' + region.af.J;
+	return 'on lines ' + region.aa.J + ' through ' + region.ag.J;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aI,
-		impl.aQ,
-		impl.aO,
+		impl.aJ,
+		impl.aR,
+		impl.aP,
 		function() { return function() {} }
 	);
 });
@@ -2720,8 +2720,8 @@ var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
 		v: func(record.v),
-		aa: record.aa,
-		Y: record.Y
+		ab: record.ab,
+		Z: record.Z
 	}
 });
 
@@ -2990,10 +2990,10 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 
 		var value = result.a;
 		var message = !tag ? value : tag < 3 ? value.a : value.v;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.aa;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ab;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.Y) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.Z) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3943,11 +3943,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aI,
-		impl.aQ,
-		impl.aO,
+		impl.aJ,
+		impl.aR,
+		impl.aP,
 		function(sendToApp, initialModel) {
-			var view = impl.aR;
+			var view = impl.aS;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3979,12 +3979,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aI,
-		impl.aQ,
-		impl.aO,
+		impl.aJ,
+		impl.aR,
+		impl.aP,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.Z && impl.Z(sendToApp)
-			var view = impl.aR;
+			var divertHrefToApp = impl._ && impl._(sendToApp)
+			var view = impl.aS;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3992,12 +3992,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aB);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aC);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.aP) && (_VirtualDom_doc.title = title = doc.aP);
+				(title !== doc.aQ) && (_VirtualDom_doc.title = title = doc.aQ);
 			});
 		}
 	);
@@ -4053,12 +4053,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.aK;
-	var onUrlRequest = impl.aL;
+	var onUrlChange = impl.aL;
+	var onUrlRequest = impl.aM;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		Z: function(sendToApp)
+		_: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4074,9 +4074,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.ar === next.ar
-							&& curr.ai === next.ai
-							&& curr.ao.a === next.ao.a
+							&& curr.as === next.as
+							&& curr.aj === next.aj
+							&& curr.ap.a === next.ap.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4084,13 +4084,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aI: function(flags)
+		aJ: function(flags)
 		{
-			return A3(impl.aI, flags, _Browser_getUrl(), key);
+			return A3(impl.aJ, flags, _Browser_getUrl(), key);
 		},
+		aS: impl.aS,
 		aR: impl.aR,
-		aQ: impl.aQ,
-		aO: impl.aO
+		aP: impl.aP
 	});
 }
 
@@ -4156,17 +4156,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { aG: 'hidden', aC: 'visibilitychange' }
+		? { aH: 'hidden', aD: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { aG: 'mozHidden', aC: 'mozvisibilitychange' }
+		? { aH: 'mozHidden', aD: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { aG: 'msHidden', aC: 'msvisibilitychange' }
+		? { aH: 'msHidden', aD: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { aG: 'webkitHidden', aC: 'webkitvisibilitychange' }
-		: { aG: 'hidden', aC: 'visibilitychange' };
+		? { aH: 'webkitHidden', aD: 'webkitvisibilitychange' }
+		: { aH: 'hidden', aD: 'visibilitychange' };
 }
 
 
@@ -4247,10 +4247,10 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		av: _Browser_getScene(),
-		ay: {
-			m: _Browser_window.pageXOffset,
-			n: _Browser_window.pageYOffset,
+		aw: _Browser_getScene(),
+		az: {
+			n: _Browser_window.pageXOffset,
+			o: _Browser_window.pageYOffset,
 			Q: _Browser_doc.documentElement.clientWidth,
 			I: _Browser_doc.documentElement.clientHeight
 		}
@@ -4286,13 +4286,13 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			av: {
+			aw: {
 				Q: node.scrollWidth,
 				I: node.scrollHeight
 			},
-			ay: {
-				m: node.scrollLeft,
-				n: node.scrollTop,
+			az: {
+				n: node.scrollLeft,
+				o: node.scrollTop,
 				Q: node.clientWidth,
 				I: node.clientHeight
 			}
@@ -4324,16 +4324,16 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			av: _Browser_getScene(),
-			ay: {
-				m: x,
-				n: y,
+			aw: _Browser_getScene(),
+			az: {
+				n: x,
+				o: y,
 				Q: _Browser_doc.documentElement.clientWidth,
 				I: _Browser_doc.documentElement.clientHeight
 			},
-			aE: {
-				m: x + rect.left,
-				n: y + rect.top,
+			aF: {
+				n: x + rect.left,
+				o: y + rect.top,
 				Q: rect.width,
 				I: rect.height
 			}
@@ -4453,7 +4453,7 @@ var $elm$core$Basics$LT = 0;
 var $author$project$Main$MoveMode = 0;
 var $elm$core$Maybe$Nothing = {$: 1};
 var $elm$core$Basics$True = 0;
-var $author$project$Main$init = {H: true, r: 0, s: 0, t: $elm$core$Maybe$Nothing, z: 0, K: 0, L: 'Write a note here.', i: _List_Nil};
+var $author$project$Main$init = {H: true, s: 0, t: 0, u: $elm$core$Maybe$Nothing, z: 0, R: 0, K: 'Write a note here.', i: _List_Nil, L: $elm$core$Maybe$Nothing};
 var $elm$core$Result$Err = function (a) {
 	return {$: 1, a: a};
 };
@@ -4876,7 +4876,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {ah: fragment, ai: host, am: path, ao: port_, ar: protocol, as: query};
+		return {ai: fragment, aj: host, an: path, ap: port_, as: protocol, at: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5161,19 +5161,19 @@ var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $elm$browser$Browser$sandbox = function (impl) {
 	return _Browser_element(
 		{
-			aI: function (_v0) {
-				return _Utils_Tuple2(impl.aI, $elm$core$Platform$Cmd$none);
+			aJ: function (_v0) {
+				return _Utils_Tuple2(impl.aJ, $elm$core$Platform$Cmd$none);
 			},
-			aO: function (_v1) {
+			aP: function (_v1) {
 				return $elm$core$Platform$Sub$none;
 			},
-			aQ: F2(
+			aR: F2(
 				function (msg, model) {
 					return _Utils_Tuple2(
-						A2(impl.aQ, msg, model),
+						A2(impl.aR, msg, model),
 						$elm$core$Platform$Cmd$none);
 				}),
-			aR: impl.aR
+			aS: impl.aS
 		});
 };
 var $author$project$Main$DeletionMode = 1;
@@ -5206,7 +5206,7 @@ var $author$project$Main$findClickedRectangle = F2(
 			} else {
 				var rect = rects.a;
 				var rest = rects.b;
-				if ((_Utils_cmp(mouseX, rect.m) > -1) && ((_Utils_cmp(mouseX, rect.m + rect.Q) < 1) && ((_Utils_cmp(mouseY, rect.n) > -1) && (_Utils_cmp(mouseY, rect.n + rect.I) < 1)))) {
+				if ((_Utils_cmp(mouseX, rect.n) > -1) && ((_Utils_cmp(mouseX, rect.n + rect.Q) < 1) && ((_Utils_cmp(mouseY, rect.o) > -1) && (_Utils_cmp(mouseY, rect.o + rect.I) < 1)))) {
 					return $elm$core$Maybe$Just(rect);
 				} else {
 					var $temp$rects = rest,
@@ -5231,7 +5231,7 @@ var $author$project$Main$isClickedRectangle = F2(
 	function (_v0, rect) {
 		var mouseX = _v0.a;
 		var mouseY = _v0.b;
-		return (_Utils_cmp(mouseX, rect.m) > -1) && ((_Utils_cmp(mouseX, rect.m + rect.Q) < 1) && ((_Utils_cmp(mouseY, rect.n) > -1) && (_Utils_cmp(mouseY, rect.n + rect.I) < 1)));
+		return (_Utils_cmp(mouseX, rect.n) > -1) && ((_Utils_cmp(mouseX, rect.n + rect.Q) < 1) && ((_Utils_cmp(mouseY, rect.o) > -1) && (_Utils_cmp(mouseY, rect.o + rect.I) < 1)));
 	});
 var $elm$core$Basics$neq = _Utils_notEqual;
 var $author$project$Main$updateRectanglePosition = F4(
@@ -5240,9 +5240,9 @@ var $author$project$Main$updateRectanglePosition = F4(
 		var mouseY = _v0.b;
 		var offsetX = _v1.a;
 		var offsetY = _v1.b;
-		return _Utils_eq(rect.u, draggedRectangleId) ? _Utils_update(
+		return _Utils_eq(rect.k, draggedRectangleId) ? _Utils_update(
 			rect,
-			{m: mouseX - offsetX, n: mouseY - offsetY}) : rect;
+			{n: mouseX - offsetX, o: mouseY - offsetY}) : rect;
 	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
@@ -5266,28 +5266,30 @@ var $author$project$Main$update = F2(
 				var newText = msg.a;
 				return _Utils_update(
 					model,
-					{L: newText});
+					{K: newText});
 			case 0:
 				var _v2 = msg.a;
 				var x = _v2.a;
 				var y = _v2.b;
-				var newRectangle = {I: 50, u: model.K, ab: model.L, Q: 100, m: x - 50, n: y - 25};
+				var newRectangleId = model.R;
+				var newRectangle = {I: 50, k: newRectangleId, ac: model.K, Q: 100, n: x - 50, o: y - 25};
 				return _Utils_update(
 					model,
 					{
-						K: model.K + 1,
-						i: A2($elm$core$List$cons, newRectangle, model.i)
+						R: newRectangleId + 1,
+						i: A2($elm$core$List$cons, newRectangle, model.i),
+						L: $elm$core$Maybe$Just(newRectangleId)
 					});
 			case 3:
 				var _v3 = msg.a;
 				var mouseX = _v3.a;
 				var mouseY = _v3.b;
-				var _v4 = model.t;
+				var _v4 = model.u;
 				if (!_v4.$) {
 					if (!_v4.a.$) {
-						var draggedRectangleId = _v4.a.a.R;
-						var offsetX = _v4.a.a.V;
-						var offsetY = _v4.a.a.W;
+						var draggedRectangleId = _v4.a.a.S;
+						var offsetX = _v4.a.a.W;
+						var offsetY = _v4.a.a.X;
 						return _Utils_update(
 							model,
 							{
@@ -5301,18 +5303,18 @@ var $author$project$Main$update = F2(
 									model.i)
 							});
 					} else {
-						var initialX = _v4.a.a.S;
-						var initialY = _v4.a.a.T;
+						var initialX = _v4.a.a.T;
+						var initialY = _v4.a.a.U;
 						var dy = mouseY - initialY;
 						var dx = mouseX - initialX;
 						return _Utils_update(
 							model,
 							{
-								r: model.r + dx,
-								s: model.s + dy,
-								t: $elm$core$Maybe$Just(
+								s: model.s + dx,
+								t: model.t + dy,
+								u: $elm$core$Maybe$Just(
 									$author$project$Main$DraggingCamera(
-										{S: mouseX, T: mouseY}))
+										{T: mouseX, U: mouseY}))
 							});
 					}
 				} else {
@@ -5321,7 +5323,7 @@ var $author$project$Main$update = F2(
 			case 4:
 				return _Utils_update(
 					model,
-					{H: true, t: $elm$core$Maybe$Nothing});
+					{H: true, u: $elm$core$Maybe$Nothing});
 			case 2:
 				var _v5 = msg.a;
 				var mouseX = _v5.a;
@@ -5336,7 +5338,7 @@ var $author$project$Main$update = F2(
 								function (rect) {
 									return A2(
 										$author$project$Main$isClickedRectangle,
-										_Utils_Tuple2(mouseX - model.r, mouseY - model.s),
+										_Utils_Tuple2(mouseX - model.s, mouseY - model.t),
 										rect);
 								},
 								reversedRects));
@@ -5346,7 +5348,7 @@ var $author$project$Main$update = F2(
 								return A2(
 									$elm$core$List$filter,
 									function (rect) {
-										return !_Utils_eq(rect.u, rectToBeRemoved.u);
+										return !_Utils_eq(rect.k, rectToBeRemoved.k);
 									},
 									model.i);
 							} else {
@@ -5357,33 +5359,34 @@ var $author$project$Main$update = F2(
 							model,
 							{i: updatedRects});
 					} else {
-						var maybeClickedRectangle = A2(
+						var _v8 = A2(
 							$author$project$Main$findClickedRectangle,
 							model.i,
-							_Utils_Tuple2(mouseX - model.r, mouseY - model.s));
-						if (!maybeClickedRectangle.$) {
-							var rect = maybeClickedRectangle.a;
-							var dragState = $author$project$Main$DraggingRectangle(
-								{R: rect.u, V: mouseX - rect.m, W: mouseY - rect.n});
+							_Utils_Tuple2(mouseX - model.s, mouseY - model.t));
+						if (!_v8.$) {
+							var rect = _v8.a;
 							return _Utils_update(
 								model,
 								{
-									t: $elm$core$Maybe$Just(dragState)
+									u: $elm$core$Maybe$Just(
+										$author$project$Main$DraggingRectangle(
+											{S: rect.k, W: mouseX - rect.n, X: mouseY - rect.o})),
+									L: $elm$core$Maybe$Just(rect.k)
 								});
 						} else {
 							return _Utils_update(
 								model,
 								{
-									t: $elm$core$Maybe$Just(
+									u: $elm$core$Maybe$Just(
 										$author$project$Main$DraggingCamera(
-											{S: mouseX, T: mouseY}))
+											{T: mouseX, U: mouseY}))
 								});
 						}
 					}
 				} else {
 					return _Utils_update(
 						model,
-						{t: $elm$core$Maybe$Nothing});
+						{u: $elm$core$Maybe$Nothing});
 				}
 			default:
 				return model;
@@ -5520,11 +5523,11 @@ var $author$project$Main$rectangleView = F2(
 					A2(
 					$elm$html$Html$Attributes$style,
 					'left',
-					$elm$core$String$fromInt(rect.m + model.r) + 'px'),
+					$elm$core$String$fromInt(rect.n + model.s) + 'px'),
 					A2(
 					$elm$html$Html$Attributes$style,
 					'top',
-					$elm$core$String$fromInt(rect.n + model.s) + 'px'),
+					$elm$core$String$fromInt(rect.o + model.t) + 'px'),
 					A2(
 					$elm$html$Html$Attributes$style,
 					'width',
@@ -5539,13 +5542,19 @@ var $author$project$Main$rectangleView = F2(
 					A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
 					A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
 					A2(
+					$elm$html$Html$Attributes$style,
+					'border',
+					_Utils_eq(
+						$elm$core$Maybe$Just(rect.k),
+						model.L) ? '4px solid red' : '1px solid black'),
+					A2(
 					$elm$html$Html$Attributes$attribute,
 					'data-id',
-					$elm$core$String$fromInt(rect.u))
+					$elm$core$String$fromInt(rect.k))
 				]),
 			_List_fromArray(
 				[
-					$elm$html$Html$text(rect.ab)
+					$elm$html$Html$text(rect.ac)
 				]));
 	});
 var $elm$json$Json$Encode$string = _Json_wrap;
@@ -5581,7 +5590,7 @@ var $author$project$Main$view = function (model) {
 					[
 						$elm$html$Html$Events$onMouseDown($author$project$Main$PreventDrag),
 						$elm$html$Html$Attributes$type_('text'),
-						$elm$html$Html$Attributes$value(model.L),
+						$elm$html$Html$Attributes$value(model.K),
 						$elm$html$Html$Events$onInput($author$project$Main$UpdateRectText)
 					]),
 				_List_Nil),
@@ -5592,7 +5601,7 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$Events$onMouseDown($author$project$Main$PreventDrag),
 						$elm$html$Html$Events$onClick(
 						$author$project$Main$AddRectangle(
-							_Utils_Tuple2(100 - model.r, 60 - model.s)))
+							_Utils_Tuple2(100 - model.s, 60 - model.t)))
 					]),
 				_List_fromArray(
 					[
@@ -5622,6 +5631,6 @@ var $author$project$Main$view = function (model) {
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$sandbox(
-	{aI: $author$project$Main$init, aQ: $author$project$Main$update, aR: $author$project$Main$view});
+	{aJ: $author$project$Main$init, aR: $author$project$Main$update, aS: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));

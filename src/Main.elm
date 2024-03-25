@@ -23,6 +23,7 @@ type alias Model =
     , mode : Mode
     , rectText : String
     , allowDrag : Bool
+    , selectedRectangleId : Maybe Int
     }
 
 type Mode
@@ -52,6 +53,7 @@ init =
     , mode = MoveMode
     , rectText = "Write a note here."
     , allowDrag = True
+    , selectedRectangleId = Nothing
     }
 
 -- UPDATE
@@ -84,16 +86,17 @@ update msg model =
 
         AddRectangle (x, y) ->
             let
+                newRectangleId = model.nextRectangleId
                 newRectangle =
-                    { id = model.nextRectangleId
-                    , x = x - 50
-                    , y = y - 25
-                    , width = 100
-                    , height = 50
-                    , text = model.rectText -- Use the text from the model
+                    { id = newRectangleId
+                    , x = x - 50, y = y - 25
+                    , width = 100, height = 50
+                    , text = model.rectText
                     }
             in
-            { model | rects = newRectangle :: model.rects, nextRectangleId = model.nextRectangleId + 1 }
+            { model | rects = newRectangle :: model.rects
+                    , nextRectangleId = newRectangleId + 1
+                    , selectedRectangleId = Just newRectangleId } -- Set as selected
         
         
         MouseMove (mouseX, mouseY) ->
@@ -128,15 +131,10 @@ update msg model =
                         in
                         { model | rects = updatedRects }
                     MoveMode ->
-                        let
-                            maybeClickedRectangle = findClickedRectangle model.rects (mouseX - model.cameraX, mouseY - model.cameraY)
-                        in
-                        case maybeClickedRectangle of
+                        case findClickedRectangle model.rects (mouseX - model.cameraX, mouseY - model.cameraY) of
                             Just rect ->
-                                let
-                                    dragState = DraggingRectangle { draggedRectangleId = rect.id, offsetX = mouseX - rect.x, offsetY = mouseY - rect.y }
-                                in
-                                { model | dragging = Just dragState }
+                                { model | dragging = Just (DraggingRectangle { draggedRectangleId = rect.id, offsetX = mouseX - rect.x, offsetY = mouseY - rect.y })
+                                        , selectedRectangleId = Just rect.id }
                             Nothing ->
                                 { model | dragging = Just (DraggingCamera { initialX = mouseX, initialY = mouseY }) }
             else
@@ -211,6 +209,7 @@ rectangleView model rect =
         , style "display" "flex"
         , style "align-items" "center"
         , style "justify-content" "center"
+        , style "border" (if Just rect.id == model.selectedRectangleId then "4px solid red" else "1px solid black") -- Highlight selected rectangle
         , Html.Attributes.attribute "data-id" (String.fromInt rect.id)
         ]
         [ text rect.text ]
