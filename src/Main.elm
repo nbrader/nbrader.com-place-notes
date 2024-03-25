@@ -66,6 +66,7 @@ type Msg
     | ToggleMode
     | NoOp
     | PreventDrag
+    | CopyTextFromSelectedRect
 
 
 update : Msg -> Model -> Model
@@ -140,6 +141,16 @@ update msg model =
             else
                 { model | dragging = Nothing }
         
+        CopyTextFromSelectedRect ->
+            case model.selectedRectangleId of
+                Just selectedId ->
+                    let
+                        selectedRectText = List.head (List.filter (\rect -> rect.id == selectedId) model.rects) |> Maybe.map (\rect -> rect.text) |> Maybe.withDefault model.rectText
+                    in
+                    { model | rectText = selectedRectText }
+                Nothing ->
+                    model
+        
         NoOp ->
             model -- Do nothing
 
@@ -193,6 +204,7 @@ view model =
                 ] []
         , button [ onMouseDown PreventDrag, onClick (AddRectangle (100 - model.cameraX, 60 - model.cameraY)) ] [ text "Add" ]
         , button [ onMouseDown PreventDrag, onClick ToggleMode ] [ text (if model.mode == MoveMode then "Switch to Deletion Mode" else "Switch to Move Mode") ]
+        , button [ onMouseDown PreventDrag, onClick CopyTextFromSelectedRect ] [ text "Copy Text" ] -- New button for copying text
         , div [] (List.map (\rect -> rectangleView model rect) model.rects)
         ]
 
