@@ -5251,10 +5251,6 @@ var $author$project$Main$update = F2(
 				return _Utils_update(
 					model,
 					{H: false});
-			case 8:
-				return _Utils_update(
-					model,
-					{H: true});
 			case 5:
 				var _v1 = model.z;
 				if (!_v1) {
@@ -5325,7 +5321,7 @@ var $author$project$Main$update = F2(
 			case 4:
 				return _Utils_update(
 					model,
-					{t: $elm$core$Maybe$Nothing});
+					{H: true, t: $elm$core$Maybe$Nothing});
 			case 2:
 				var _v5 = msg.a;
 				var mouseX = _v5.a;
@@ -5396,9 +5392,8 @@ var $author$project$Main$update = F2(
 var $author$project$Main$AddRectangle = function (a) {
 	return {$: 0, a: a};
 };
-var $author$project$Main$InputBlurred = {$: 8};
-var $author$project$Main$InputFocused = {$: 7};
 var $author$project$Main$MouseUp = {$: 4};
+var $author$project$Main$PreventDrag = {$: 7};
 var $author$project$Main$ToggleMode = {$: 5};
 var $author$project$Main$UpdateRectText = function (a) {
 	return {$: 1, a: a};
@@ -5443,22 +5438,10 @@ var $elm$html$Html$Events$on = F2(
 			event,
 			$elm$virtual_dom$VirtualDom$Normal(decoder));
 	});
-var $elm$html$Html$Events$onBlur = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'blur',
-		$elm$json$Json$Decode$succeed(msg));
-};
 var $elm$html$Html$Events$onClick = function (msg) {
 	return A2(
 		$elm$html$Html$Events$on,
 		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $elm$html$Html$Events$onFocus = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'focus',
 		$elm$json$Json$Decode$succeed(msg));
 };
 var $elm$html$Html$Events$alwaysStop = function (x) {
@@ -5492,6 +5475,12 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 			$elm$json$Json$Decode$map,
 			$elm$html$Html$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
+};
+var $elm$html$Html$Events$onMouseDown = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'mousedown',
+		$elm$json$Json$Decode$succeed(msg));
 };
 var $author$project$Main$NoOp = {$: 6};
 var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
@@ -5590,17 +5579,17 @@ var $author$project$Main$view = function (model) {
 				$elm$html$Html$input,
 				_List_fromArray(
 					[
+						$elm$html$Html$Events$onMouseDown($author$project$Main$PreventDrag),
 						$elm$html$Html$Attributes$type_('text'),
 						$elm$html$Html$Attributes$value(model.L),
-						$elm$html$Html$Events$onInput($author$project$Main$UpdateRectText),
-						$elm$html$Html$Events$onFocus($author$project$Main$InputFocused),
-						$elm$html$Html$Events$onBlur($author$project$Main$InputBlurred)
+						$elm$html$Html$Events$onInput($author$project$Main$UpdateRectText)
 					]),
 				_List_Nil),
 				A2(
 				$elm$html$Html$button,
 				_List_fromArray(
 					[
+						$elm$html$Html$Events$onMouseDown($author$project$Main$PreventDrag),
 						$elm$html$Html$Events$onClick(
 						$author$project$Main$AddRectangle(
 							_Utils_Tuple2(100 - model.r, 60 - model.s)))
@@ -5613,6 +5602,7 @@ var $author$project$Main$view = function (model) {
 				$elm$html$Html$button,
 				_List_fromArray(
 					[
+						$elm$html$Html$Events$onMouseDown($author$project$Main$PreventDrag),
 						$elm$html$Html$Events$onClick($author$project$Main$ToggleMode)
 					]),
 				_List_fromArray(

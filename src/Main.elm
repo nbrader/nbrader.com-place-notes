@@ -63,18 +63,14 @@ type Msg
     | MouseUp
     | ToggleMode
     | NoOp
-    | InputFocused
-    | InputBlurred
+    | PreventDrag
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        InputFocused ->
+        PreventDrag ->
             { model | allowDrag = False }
-
-        InputBlurred ->
-            { model | allowDrag = True }
         
         ToggleMode ->
             case model.mode of
@@ -115,7 +111,7 @@ update msg model =
                     model
             
         MouseUp ->
-            { model | dragging = Nothing }
+            { model | dragging = Nothing, allowDrag = True }
         
         MouseDown (mouseX, mouseY) ->
             if model.allowDrag then
@@ -192,14 +188,13 @@ view model =
         , Html.Events.on "mousedown" mousePositionDecoder
         , preventDragStart
         ]
-        [ input [ type_ "text"
+        [ input [ onMouseDown PreventDrag
+                , type_ "text"
                 , value model.rectText
                 , onInput UpdateRectText
-                , onFocus InputFocused
-                , onBlur InputBlurred
                 ] []
-        , button [ onClick (AddRectangle (100 - model.cameraX, 60 - model.cameraY)) ] [ text "Add" ]
-        , button [ onClick ToggleMode ] [ text (if model.mode == MoveMode then "Switch to Deletion Mode" else "Switch to Move Mode") ]
+        , button [ onMouseDown PreventDrag, onClick (AddRectangle (100 - model.cameraX, 60 - model.cameraY)) ] [ text "Add" ]
+        , button [ onMouseDown PreventDrag, onClick ToggleMode ] [ text (if model.mode == MoveMode then "Switch to Deletion Mode" else "Switch to Move Mode") ]
         , div [] (List.map (\rect -> rectangleView model rect) model.rects)
         ]
 
