@@ -2719,7 +2719,7 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		v: func(record.v),
+		w: func(record.w),
 		ac: record.ac,
 		_: record._
 	}
@@ -2989,7 +2989,7 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.v;
+		var message = !tag ? value : tag < 3 ? value.a : value.w;
 		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ac;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
@@ -4453,7 +4453,7 @@ var $elm$core$Basics$LT = 0;
 var $author$project$Main$MoveMode = 0;
 var $elm$core$Maybe$Nothing = {$: 1};
 var $elm$core$Basics$True = 0;
-var $author$project$Main$init = {K: true, s: 0, t: 0, u: $elm$core$Maybe$Nothing, A: 0, S: 0, x: 'Write a note here.', e: _List_Nil, D: $elm$core$Maybe$Nothing};
+var $author$project$Main$init = {K: true, s: 0, t: 0, u: $elm$core$Maybe$Nothing, v: 'Write a note here.', A: 0, S: 0, e: _List_Nil, D: $elm$core$Maybe$Nothing};
 var $elm$core$Result$Err = function (a) {
 	return {$: 1, a: a};
 };
@@ -5180,7 +5180,7 @@ var $author$project$Main$DeletionMode = 1;
 var $author$project$Main$DraggingCamera = function (a) {
 	return {$: 1, a: a};
 };
-var $author$project$Main$DraggingRectangle = function (a) {
+var $author$project$Main$DraggingPlaceNote = function (a) {
 	return {$: 0, a: a};
 };
 var $author$project$Main$calculateTextWidth = function (text) {
@@ -5198,25 +5198,25 @@ var $elm$core$List$filter = F2(
 			list);
 	});
 var $elm$core$Basics$ge = _Utils_ge;
-var $author$project$Main$findClickedRectangle = F2(
-	function (rects, _v0) {
-		findClickedRectangle:
+var $author$project$Main$findClickedPlaceNote = F2(
+	function (placeNotes, _v0) {
+		findClickedPlaceNote:
 		while (true) {
 			var mouseX = _v0.a;
 			var mouseY = _v0.b;
-			if (!rects.b) {
+			if (!placeNotes.b) {
 				return $elm$core$Maybe$Nothing;
 			} else {
-				var rect = rects.a;
-				var rest = rects.b;
-				if ((_Utils_cmp(mouseX, rect.n) > -1) && ((_Utils_cmp(mouseX, rect.n + rect.I) < 1) && ((_Utils_cmp(mouseY, rect.o) > -1) && (_Utils_cmp(mouseY, rect.o + rect.L) < 1)))) {
-					return $elm$core$Maybe$Just(rect);
+				var placeNote = placeNotes.a;
+				var rest = placeNotes.b;
+				if ((_Utils_cmp(mouseX, placeNote.n) > -1) && ((_Utils_cmp(mouseX, placeNote.n + placeNote.I) < 1) && ((_Utils_cmp(mouseY, placeNote.o) > -1) && (_Utils_cmp(mouseY, placeNote.o + placeNote.L) < 1)))) {
+					return $elm$core$Maybe$Just(placeNote);
 				} else {
-					var $temp$rects = rest,
+					var $temp$placeNotes = rest,
 						$temp$_v0 = _Utils_Tuple2(mouseX, mouseY);
-					rects = $temp$rects;
+					placeNotes = $temp$placeNotes;
 					_v0 = $temp$_v0;
-					continue findClickedRectangle;
+					continue findClickedPlaceNote;
 				}
 			}
 		}
@@ -5230,11 +5230,11 @@ var $elm$core$List$head = function (list) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $author$project$Main$isClickedRectangle = F2(
-	function (_v0, rect) {
+var $author$project$Main$isClickedPlaceNote = F2(
+	function (_v0, placeNote) {
 		var mouseX = _v0.a;
 		var mouseY = _v0.b;
-		return (_Utils_cmp(mouseX, rect.n) > -1) && ((_Utils_cmp(mouseX, rect.n + rect.I) < 1) && ((_Utils_cmp(mouseY, rect.o) > -1) && (_Utils_cmp(mouseY, rect.o + rect.L) < 1)));
+		return (_Utils_cmp(mouseX, placeNote.n) > -1) && ((_Utils_cmp(mouseX, placeNote.n + placeNote.I) < 1) && ((_Utils_cmp(mouseY, placeNote.o) > -1) && (_Utils_cmp(mouseY, placeNote.o + placeNote.L) < 1)));
 	});
 var $elm$core$Maybe$map = F2(
 	function (f, maybe) {
@@ -5247,15 +5247,15 @@ var $elm$core$Maybe$map = F2(
 		}
 	});
 var $elm$core$Basics$neq = _Utils_notEqual;
-var $author$project$Main$updateRectanglePosition = F4(
-	function (_v0, draggedRectangleId, _v1, rect) {
+var $author$project$Main$updatePlaceNotePosition = F4(
+	function (_v0, draggedPlaceNoteId, _v1, placeNote) {
 		var mouseX = _v0.a;
 		var mouseY = _v0.b;
 		var offsetX = _v1.a;
 		var offsetY = _v1.b;
-		return _Utils_eq(rect.j, draggedRectangleId) ? _Utils_update(
-			rect,
-			{n: mouseX - offsetX, o: mouseY - offsetY}) : rect;
+		return _Utils_eq(placeNote.j, draggedPlaceNoteId) ? _Utils_update(
+			placeNote,
+			{n: mouseX - offsetX, o: mouseY - offsetY}) : placeNote;
 	});
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
@@ -5286,19 +5286,19 @@ var $author$project$Main$update = F2(
 				}
 			case 1:
 				var newText = msg.a;
-				var updatedRects = function () {
+				var updatedPlaceNotes = function () {
 					var _v2 = model.D;
 					if (!_v2.$) {
 						var selectedId = _v2.a;
 						return A2(
 							$elm$core$List$map,
-							function (rect) {
-								return _Utils_eq(rect.j, selectedId) ? _Utils_update(
-									rect,
+							function (placeNote) {
+								return _Utils_eq(placeNote.j, selectedId) ? _Utils_update(
+									placeNote,
 									{
 										O: newText,
 										I: $author$project$Main$calculateTextWidth(newText)
-									}) : rect;
+									}) : placeNote;
 							},
 							model.e);
 					} else {
@@ -5307,20 +5307,20 @@ var $author$project$Main$update = F2(
 				}();
 				return _Utils_update(
 					model,
-					{x: newText, e: updatedRects});
+					{v: newText, e: updatedPlaceNotes});
 			case 0:
 				var _v3 = msg.a;
 				var x = _v3.a;
 				var y = _v3.b;
-				var textWidth = $author$project$Main$calculateTextWidth(model.x);
-				var newRectangleId = model.S;
-				var newRectangle = {L: 50, j: newRectangleId, O: model.x, I: textWidth, n: x - textWidth, o: y - 25};
+				var textWidth = $author$project$Main$calculateTextWidth(model.v);
+				var newPlaceNoteId = model.S;
+				var newPlaceNote = {L: 50, j: newPlaceNoteId, O: model.v, I: textWidth, n: x - textWidth, o: y - 25};
 				return _Utils_update(
 					model,
 					{
-						S: newRectangleId + 1,
-						e: A2($elm$core$List$cons, newRectangle, model.e),
-						D: $elm$core$Maybe$Just(newRectangleId)
+						S: newPlaceNoteId + 1,
+						e: A2($elm$core$List$cons, newPlaceNote, model.e),
+						D: $elm$core$Maybe$Just(newPlaceNoteId)
 					});
 			case 3:
 				var _v4 = msg.a;
@@ -5329,7 +5329,7 @@ var $author$project$Main$update = F2(
 				var _v5 = model.u;
 				if (!_v5.$) {
 					if (!_v5.a.$) {
-						var draggedRectangleId = _v5.a.a.T;
+						var draggedPlaceNoteId = _v5.a.a.T;
 						var offsetX = _v5.a.a.X;
 						var offsetY = _v5.a.a.Y;
 						return _Utils_update(
@@ -5338,9 +5338,9 @@ var $author$project$Main$update = F2(
 								e: A2(
 									$elm$core$List$map,
 									A3(
-										$author$project$Main$updateRectanglePosition,
+										$author$project$Main$updatePlaceNotePosition,
 										_Utils_Tuple2(mouseX, mouseY),
-										draggedRectangleId,
+										draggedPlaceNoteId,
 										_Utils_Tuple2(offsetX, offsetY)),
 									model.e)
 							});
@@ -5373,24 +5373,24 @@ var $author$project$Main$update = F2(
 				if (model.K) {
 					var _v7 = model.A;
 					if (_v7 === 1) {
-						var reversedRects = $elm$core$List$reverse(model.e);
-						var clickedRect = $elm$core$List$head(
+						var reversedPlaceNotes = $elm$core$List$reverse(model.e);
+						var clickedPlaceNote = $elm$core$List$head(
 							A2(
 								$elm$core$List$filter,
-								function (rect) {
+								function (placeNote) {
 									return A2(
-										$author$project$Main$isClickedRectangle,
+										$author$project$Main$isClickedPlaceNote,
 										_Utils_Tuple2(mouseX - model.s, mouseY - model.t),
-										rect);
+										placeNote);
 								},
-								reversedRects));
-						var updatedRects = function () {
-							if (!clickedRect.$) {
-								var rectToBeRemoved = clickedRect.a;
+								reversedPlaceNotes));
+						var updatedPlaceNotes = function () {
+							if (!clickedPlaceNote.$) {
+								var placeNoteToBeRemoved = clickedPlaceNote.a;
 								return A2(
 									$elm$core$List$filter,
-									function (rect) {
-										return !_Utils_eq(rect.j, rectToBeRemoved.j);
+									function (placeNote) {
+										return !_Utils_eq(placeNote.j, placeNoteToBeRemoved.j);
 									},
 									model.e);
 							} else {
@@ -5399,21 +5399,21 @@ var $author$project$Main$update = F2(
 						}();
 						return _Utils_update(
 							model,
-							{e: updatedRects});
+							{e: updatedPlaceNotes});
 					} else {
 						var _v9 = A2(
-							$author$project$Main$findClickedRectangle,
+							$author$project$Main$findClickedPlaceNote,
 							model.e,
 							_Utils_Tuple2(mouseX - model.s, mouseY - model.t));
 						if (!_v9.$) {
-							var rect = _v9.a;
+							var placeNote = _v9.a;
 							return _Utils_update(
 								model,
 								{
 									u: $elm$core$Maybe$Just(
-										$author$project$Main$DraggingRectangle(
-											{T: rect.j, X: mouseX - rect.n, Y: mouseY - rect.o})),
-									D: $elm$core$Maybe$Just(rect.j)
+										$author$project$Main$DraggingPlaceNote(
+											{T: placeNote.j, X: mouseX - placeNote.n, Y: mouseY - placeNote.o})),
+									D: $elm$core$Maybe$Just(placeNote.j)
 								});
 						} else {
 							return _Utils_update(
@@ -5434,24 +5434,24 @@ var $author$project$Main$update = F2(
 				var _v10 = model.D;
 				if (!_v10.$) {
 					var selectedId = _v10.a;
-					var selectedRectText = A2(
+					var selectedPlaceNoteText = A2(
 						$elm$core$Maybe$withDefault,
-						model.x,
+						model.v,
 						A2(
 							$elm$core$Maybe$map,
-							function (rect) {
-								return rect.O;
+							function (placeNote) {
+								return placeNote.O;
 							},
 							$elm$core$List$head(
 								A2(
 									$elm$core$List$filter,
-									function (rect) {
-										return _Utils_eq(rect.j, selectedId);
+									function (placeNote) {
+										return _Utils_eq(placeNote.j, selectedId);
 									},
 									model.e))));
 					return _Utils_update(
 						model,
-						{x: selectedRectText});
+						{v: selectedPlaceNoteText});
 				} else {
 					return model;
 				}
@@ -5459,14 +5459,14 @@ var $author$project$Main$update = F2(
 				return model;
 		}
 	});
-var $author$project$Main$AddRectangle = function (a) {
+var $author$project$Main$AddPlaceNote = function (a) {
 	return {$: 0, a: a};
 };
-var $author$project$Main$CopyTextFromSelectedRect = {$: 8};
+var $author$project$Main$CopyTextFromSelectedPlaceNote = {$: 8};
 var $author$project$Main$MouseUp = {$: 4};
 var $author$project$Main$PreventDrag = {$: 7};
 var $author$project$Main$ToggleMode = {$: 5};
-var $author$project$Main$UpdateRectText = function (a) {
+var $author$project$Main$UpdatePlaceNoteText = function (a) {
 	return {$: 1, a: a};
 };
 var $elm$html$Html$button = _VirtualDom_node('button');
@@ -5553,6 +5553,62 @@ var $elm$html$Html$Events$onMouseDown = function (msg) {
 		'mousedown',
 		$elm$json$Json$Decode$succeed(msg));
 };
+var $elm$virtual_dom$VirtualDom$attribute = F2(
+	function (key, value) {
+		return A2(
+			_VirtualDom_attribute,
+			_VirtualDom_noOnOrFormAction(key),
+			_VirtualDom_noJavaScriptOrHtmlUri(value));
+	});
+var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$Main$placeNoteView = F2(
+	function (model, placeNote) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
+					A2(
+					$elm$html$Html$Attributes$style,
+					'left',
+					$elm$core$String$fromInt(placeNote.n + model.s) + 'px'),
+					A2(
+					$elm$html$Html$Attributes$style,
+					'top',
+					$elm$core$String$fromInt(placeNote.o + model.t) + 'px'),
+					A2(
+					$elm$html$Html$Attributes$style,
+					'width',
+					$elm$core$String$fromInt(placeNote.I) + 'px'),
+					A2(
+					$elm$html$Html$Attributes$style,
+					'height',
+					$elm$core$String$fromInt(placeNote.L) + 'px'),
+					A2($elm$html$Html$Attributes$style, 'background-color', 'blue'),
+					A2($elm$html$Html$Attributes$style, 'color', 'white'),
+					A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+					A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
+					A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+					A2(
+					$elm$html$Html$Attributes$style,
+					'border',
+					_Utils_eq(
+						$elm$core$Maybe$Just(placeNote.j),
+						model.D) ? '4px solid red' : '1px solid black'),
+					A2(
+					$elm$html$Html$Attributes$attribute,
+					'data-id',
+					$elm$core$String$fromInt(placeNote.j))
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(placeNote.O)
+				]));
+	});
 var $author$project$Main$NoOp = {$: 6};
 var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
 	return {$: 2, a: a};
@@ -5569,62 +5625,6 @@ var $author$project$Main$preventDragStart = A2(
 	'dragstart',
 	$elm$json$Json$Decode$succeed(
 		_Utils_Tuple2($author$project$Main$NoOp, true)));
-var $elm$virtual_dom$VirtualDom$attribute = F2(
-	function (key, value) {
-		return A2(
-			_VirtualDom_attribute,
-			_VirtualDom_noOnOrFormAction(key),
-			_VirtualDom_noJavaScriptOrHtmlUri(value));
-	});
-var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
-var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$Main$rectangleView = F2(
-	function (model, rect) {
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-					A2(
-					$elm$html$Html$Attributes$style,
-					'left',
-					$elm$core$String$fromInt(rect.n + model.s) + 'px'),
-					A2(
-					$elm$html$Html$Attributes$style,
-					'top',
-					$elm$core$String$fromInt(rect.o + model.t) + 'px'),
-					A2(
-					$elm$html$Html$Attributes$style,
-					'width',
-					$elm$core$String$fromInt(rect.I) + 'px'),
-					A2(
-					$elm$html$Html$Attributes$style,
-					'height',
-					$elm$core$String$fromInt(rect.L) + 'px'),
-					A2($elm$html$Html$Attributes$style, 'background-color', 'blue'),
-					A2($elm$html$Html$Attributes$style, 'color', 'white'),
-					A2($elm$html$Html$Attributes$style, 'display', 'flex'),
-					A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
-					A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
-					A2(
-					$elm$html$Html$Attributes$style,
-					'border',
-					_Utils_eq(
-						$elm$core$Maybe$Just(rect.j),
-						model.D) ? '4px solid red' : '1px solid black'),
-					A2(
-					$elm$html$Html$Attributes$attribute,
-					'data-id',
-					$elm$core$String$fromInt(rect.j))
-				]),
-			_List_fromArray(
-				[
-					$elm$html$Html$text(rect.O)
-				]));
-	});
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -5658,8 +5658,8 @@ var $author$project$Main$view = function (model) {
 					[
 						$elm$html$Html$Events$onMouseDown($author$project$Main$PreventDrag),
 						$elm$html$Html$Attributes$type_('text'),
-						$elm$html$Html$Attributes$value(model.x),
-						$elm$html$Html$Events$onInput($author$project$Main$UpdateRectText)
+						$elm$html$Html$Attributes$value(model.v),
+						$elm$html$Html$Events$onInput($author$project$Main$UpdatePlaceNoteText)
 					]),
 				_List_Nil),
 				A2(
@@ -5668,12 +5668,12 @@ var $author$project$Main$view = function (model) {
 					[
 						$elm$html$Html$Events$onMouseDown($author$project$Main$PreventDrag),
 						$elm$html$Html$Events$onClick(
-						$author$project$Main$AddRectangle(
+						$author$project$Main$AddPlaceNote(
 							_Utils_Tuple2(100 - model.s, 60 - model.t)))
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Add')
+						$elm$html$Html$text('Add PlaceNote')
 					])),
 				A2(
 				$elm$html$Html$button,
@@ -5692,19 +5692,19 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						$elm$html$Html$Events$onMouseDown($author$project$Main$PreventDrag),
-						$elm$html$Html$Events$onClick($author$project$Main$CopyTextFromSelectedRect)
+						$elm$html$Html$Events$onClick($author$project$Main$CopyTextFromSelectedPlaceNote)
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Copy Text')
+						$elm$html$Html$text('Copy Text from PlaceNote')
 					])),
 				A2(
 				$elm$html$Html$div,
 				_List_Nil,
 				A2(
 					$elm$core$List$map,
-					function (rect) {
-						return A2($author$project$Main$rectangleView, model, rect);
+					function (placeNote) {
+						return A2($author$project$Main$placeNoteView, model, placeNote);
 					},
 					model.e))
 			]));
