@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.Y.I === region.ac.I)
+	if (region.Z.I === region.ae.I)
 	{
-		return 'on line ' + region.Y.I;
+		return 'on line ' + region.Z.I;
 	}
-	return 'on lines ' + region.Y.I + ' through ' + region.ac.I;
+	return 'on lines ' + region.Z.I + ' through ' + region.ae.I;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aF,
+		impl.aH,
+		impl.aP,
 		impl.aN,
-		impl.aL,
 		function() { return function() {} }
 	);
 });
@@ -2720,8 +2720,8 @@ var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
 		u: func(record.u),
-		Z: record.Z,
-		W: record.W
+		_: record._,
+		X: record.X
 	}
 });
 
@@ -2990,10 +2990,10 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 
 		var value = result.a;
 		var message = !tag ? value : tag < 3 ? value.a : value.u;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.Z;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value._;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.W) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.X) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3943,11 +3943,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aF,
+		impl.aH,
+		impl.aP,
 		impl.aN,
-		impl.aL,
 		function(sendToApp, initialModel) {
-			var view = impl.aO;
+			var view = impl.aQ;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3979,12 +3979,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aF,
+		impl.aH,
+		impl.aP,
 		impl.aN,
-		impl.aL,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.X && impl.X(sendToApp)
-			var view = impl.aO;
+			var divertHrefToApp = impl.Y && impl.Y(sendToApp)
+			var view = impl.aQ;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3992,12 +3992,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.ay);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aA);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.aM) && (_VirtualDom_doc.title = title = doc.aM);
+				(title !== doc.aO) && (_VirtualDom_doc.title = title = doc.aO);
 			});
 		}
 	);
@@ -4053,12 +4053,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.aH;
-	var onUrlRequest = impl.aI;
+	var onUrlChange = impl.aJ;
+	var onUrlRequest = impl.aK;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		X: function(sendToApp)
+		Y: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4074,9 +4074,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.ao === next.ao
-							&& curr.af === next.af
-							&& curr.al.a === next.al.a
+							&& curr.aq === next.aq
+							&& curr.ah === next.ah
+							&& curr.an.a === next.an.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4084,13 +4084,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aF: function(flags)
+		aH: function(flags)
 		{
-			return A3(impl.aF, flags, _Browser_getUrl(), key);
+			return A3(impl.aH, flags, _Browser_getUrl(), key);
 		},
-		aO: impl.aO,
-		aN: impl.aN,
-		aL: impl.aL
+		aQ: impl.aQ,
+		aP: impl.aP,
+		aN: impl.aN
 	});
 }
 
@@ -4156,17 +4156,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { aD: 'hidden', az: 'visibilitychange' }
+		? { aF: 'hidden', aB: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { aD: 'mozHidden', az: 'mozvisibilitychange' }
+		? { aF: 'mozHidden', aB: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { aD: 'msHidden', az: 'msvisibilitychange' }
+		? { aF: 'msHidden', aB: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { aD: 'webkitHidden', az: 'webkitvisibilitychange' }
-		: { aD: 'hidden', az: 'visibilitychange' };
+		? { aF: 'webkitHidden', aB: 'webkitvisibilitychange' }
+		: { aF: 'hidden', aB: 'visibilitychange' };
 }
 
 
@@ -4247,11 +4247,11 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		as: _Browser_getScene(),
-		av: {
+		au: _Browser_getScene(),
+		ax: {
 			m: _Browser_window.pageXOffset,
 			n: _Browser_window.pageYOffset,
-			O: _Browser_doc.documentElement.clientWidth,
+			P: _Browser_doc.documentElement.clientWidth,
 			H: _Browser_doc.documentElement.clientHeight
 		}
 	};
@@ -4262,7 +4262,7 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		O: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		P: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
 		H: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
@@ -4286,14 +4286,14 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			as: {
-				O: node.scrollWidth,
+			au: {
+				P: node.scrollWidth,
 				H: node.scrollHeight
 			},
-			av: {
+			ax: {
 				m: node.scrollLeft,
 				n: node.scrollTop,
-				O: node.clientWidth,
+				P: node.clientWidth,
 				H: node.clientHeight
 			}
 		};
@@ -4324,17 +4324,17 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			as: _Browser_getScene(),
-			av: {
+			au: _Browser_getScene(),
+			ax: {
 				m: x,
 				n: y,
-				O: _Browser_doc.documentElement.clientWidth,
+				P: _Browser_doc.documentElement.clientWidth,
 				H: _Browser_doc.documentElement.clientHeight
 			},
-			aB: {
+			aD: {
 				m: x + rect.left,
 				n: y + rect.top,
-				O: rect.width,
+				P: rect.width,
 				H: rect.height
 			}
 		};
@@ -4452,7 +4452,7 @@ var $elm$core$Basics$GT = 2;
 var $elm$core$Basics$LT = 0;
 var $author$project$Main$MoveMode = 0;
 var $elm$core$Maybe$Nothing = {$: 1};
-var $author$project$Main$init = {r: 0, s: 0, x: $elm$core$Maybe$Nothing, z: 0, J: 0, i: _List_Nil};
+var $author$project$Main$init = {r: 0, s: 0, x: $elm$core$Maybe$Nothing, z: 0, J: 0, K: 'Write a note here.', i: _List_Nil};
 var $elm$core$Result$Err = function (a) {
 	return {$: 1, a: a};
 };
@@ -4876,7 +4876,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {ae: fragment, af: host, aj: path, al: port_, ao: protocol, ap: query};
+		return {ag: fragment, ah: host, al: path, an: port_, aq: protocol, ar: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5161,19 +5161,19 @@ var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $elm$browser$Browser$sandbox = function (impl) {
 	return _Browser_element(
 		{
-			aF: function (_v0) {
-				return _Utils_Tuple2(impl.aF, $elm$core$Platform$Cmd$none);
+			aH: function (_v0) {
+				return _Utils_Tuple2(impl.aH, $elm$core$Platform$Cmd$none);
 			},
-			aL: function (_v1) {
+			aN: function (_v1) {
 				return $elm$core$Platform$Sub$none;
 			},
-			aN: F2(
+			aP: F2(
 				function (msg, model) {
 					return _Utils_Tuple2(
-						A2(impl.aN, msg, model),
+						A2(impl.aP, msg, model),
 						$elm$core$Platform$Cmd$none);
 				}),
-			aO: impl.aO
+			aQ: impl.aQ
 		});
 };
 var $author$project$Main$DeletionMode = 1;
@@ -5206,7 +5206,7 @@ var $author$project$Main$findClickedRectangle = F2(
 			} else {
 				var rect = rects.a;
 				var rest = rects.b;
-				if ((_Utils_cmp(mouseX, rect.m) > -1) && ((_Utils_cmp(mouseX, rect.m + rect.O) < 1) && ((_Utils_cmp(mouseY, rect.n) > -1) && (_Utils_cmp(mouseY, rect.n + rect.H) < 1)))) {
+				if ((_Utils_cmp(mouseX, rect.m) > -1) && ((_Utils_cmp(mouseX, rect.m + rect.P) < 1) && ((_Utils_cmp(mouseY, rect.n) > -1) && (_Utils_cmp(mouseY, rect.n + rect.H) < 1)))) {
 					return $elm$core$Maybe$Just(rect);
 				} else {
 					var $temp$rects = rest,
@@ -5231,7 +5231,7 @@ var $author$project$Main$isClickedRectangle = F2(
 	function (_v0, rect) {
 		var mouseX = _v0.a;
 		var mouseY = _v0.b;
-		return (_Utils_cmp(mouseX, rect.m) > -1) && ((_Utils_cmp(mouseX, rect.m + rect.O) < 1) && ((_Utils_cmp(mouseY, rect.n) > -1) && (_Utils_cmp(mouseY, rect.n + rect.H) < 1)));
+		return (_Utils_cmp(mouseX, rect.m) > -1) && ((_Utils_cmp(mouseX, rect.m + rect.P) < 1) && ((_Utils_cmp(mouseY, rect.n) > -1) && (_Utils_cmp(mouseY, rect.n + rect.H) < 1)));
 	});
 var $elm$core$Basics$neq = _Utils_notEqual;
 var $author$project$Main$updateRectanglePosition = F4(
@@ -5247,7 +5247,7 @@ var $author$project$Main$updateRectanglePosition = F4(
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
-			case 4:
+			case 5:
 				var _v1 = model.z;
 				if (!_v1) {
 					return _Utils_update(
@@ -5258,27 +5258,32 @@ var $author$project$Main$update = F2(
 						model,
 						{z: 0});
 				}
+			case 1:
+				var newText = msg.a;
+				return _Utils_update(
+					model,
+					{K: newText});
 			case 0:
 				var _v2 = msg.a;
 				var x = _v2.a;
 				var y = _v2.b;
-				var newRectangle = {H: 50, t: model.J, O: 100, m: x - 50, n: y - 25};
+				var newRectangle = {H: 50, t: model.J, aa: model.K, P: 100, m: x - 50, n: y - 25};
 				return _Utils_update(
 					model,
 					{
 						J: model.J + 1,
 						i: A2($elm$core$List$cons, newRectangle, model.i)
 					});
-			case 2:
+			case 3:
 				var _v3 = msg.a;
 				var mouseX = _v3.a;
 				var mouseY = _v3.b;
 				var _v4 = model.x;
 				if (!_v4.$) {
 					if (!_v4.a.$) {
-						var draggedRectangleId = _v4.a.a.P;
-						var offsetX = _v4.a.a.T;
-						var offsetY = _v4.a.a.U;
+						var draggedRectangleId = _v4.a.a.Q;
+						var offsetX = _v4.a.a.U;
+						var offsetY = _v4.a.a.V;
 						return _Utils_update(
 							model,
 							{
@@ -5292,8 +5297,8 @@ var $author$project$Main$update = F2(
 									model.i)
 							});
 					} else {
-						var initialX = _v4.a.a.Q;
-						var initialY = _v4.a.a.R;
+						var initialX = _v4.a.a.R;
+						var initialY = _v4.a.a.S;
 						var dy = mouseY - initialY;
 						var dx = mouseX - initialX;
 						return _Utils_update(
@@ -5303,17 +5308,17 @@ var $author$project$Main$update = F2(
 								s: model.s + dy,
 								x: $elm$core$Maybe$Just(
 									$author$project$Main$DraggingCamera(
-										{Q: mouseX, R: mouseY}))
+										{R: mouseX, S: mouseY}))
 							});
 					}
 				} else {
 					return model;
 				}
-			case 3:
+			case 4:
 				return _Utils_update(
 					model,
 					{x: $elm$core$Maybe$Nothing});
-			case 1:
+			case 2:
 				var _v5 = msg.a;
 				var mouseX = _v5.a;
 				var mouseY = _v5.b;
@@ -5354,7 +5359,7 @@ var $author$project$Main$update = F2(
 					if (!maybeClickedRectangle.$) {
 						var rect = maybeClickedRectangle.a;
 						var dragState = $author$project$Main$DraggingRectangle(
-							{P: rect.t, T: mouseX - rect.m, U: mouseY - rect.n});
+							{Q: rect.t, U: mouseX - rect.m, V: mouseY - rect.n});
 						return _Utils_update(
 							model,
 							{
@@ -5366,7 +5371,7 @@ var $author$project$Main$update = F2(
 							{
 								x: $elm$core$Maybe$Just(
 									$author$project$Main$DraggingCamera(
-										{Q: mouseX, R: mouseY}))
+										{R: mouseX, S: mouseY}))
 							});
 					}
 				}
@@ -5377,12 +5382,16 @@ var $author$project$Main$update = F2(
 var $author$project$Main$AddRectangle = function (a) {
 	return {$: 0, a: a};
 };
-var $author$project$Main$MouseUp = {$: 3};
-var $author$project$Main$ToggleMode = {$: 4};
+var $author$project$Main$MouseUp = {$: 4};
+var $author$project$Main$ToggleMode = {$: 5};
+var $author$project$Main$UpdateRectText = function (a) {
+	return {$: 1, a: a};
+};
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$html$Html$input = _VirtualDom_node('input');
 var $author$project$Main$MouseMove = function (a) {
-	return {$: 2, a: a};
+	return {$: 3, a: a};
 };
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
@@ -5396,7 +5405,7 @@ var $author$project$Main$mouseMoveDecoder = A3(
 	A2($elm$json$Json$Decode$field, 'clientX', $elm$json$Json$Decode$int),
 	A2($elm$json$Json$Decode$field, 'clientY', $elm$json$Json$Decode$int));
 var $author$project$Main$MouseDown = function (a) {
-	return {$: 1, a: a};
+	return {$: 2, a: a};
 };
 var $author$project$Main$mousePositionDecoder = A3(
 	$elm$json$Json$Decode$map2,
@@ -5424,7 +5433,39 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $author$project$Main$NoOp = {$: 5};
+var $elm$html$Html$Events$alwaysStop = function (x) {
+	return _Utils_Tuple2(x, true);
+};
+var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
+	return {$: 1, a: a};
+};
+var $elm$html$Html$Events$stopPropagationOn = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+	});
+var $elm$json$Json$Decode$at = F2(
+	function (fields, decoder) {
+		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
+	});
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $elm$html$Html$Events$targetValue = A2(
+	$elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'value']),
+	$elm$json$Json$Decode$string);
+var $elm$html$Html$Events$onInput = function (tagger) {
+	return A2(
+		$elm$html$Html$Events$stopPropagationOn,
+		'input',
+		A2(
+			$elm$json$Json$Decode$map,
+			$elm$html$Html$Events$alwaysStop,
+			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
+};
+var $author$project$Main$NoOp = {$: 6};
 var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
 	return {$: 2, a: a};
 };
@@ -5450,6 +5491,8 @@ var $elm$virtual_dom$VirtualDom$attribute = F2(
 var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$rectangleView = F2(
 	function (model, rect) {
 		return A2(
@@ -5468,21 +5511,36 @@ var $author$project$Main$rectangleView = F2(
 					A2(
 					$elm$html$Html$Attributes$style,
 					'width',
-					$elm$core$String$fromInt(rect.O) + 'px'),
+					$elm$core$String$fromInt(rect.P) + 'px'),
 					A2(
 					$elm$html$Html$Attributes$style,
 					'height',
 					$elm$core$String$fromInt(rect.H) + 'px'),
 					A2($elm$html$Html$Attributes$style, 'background-color', 'blue'),
+					A2($elm$html$Html$Attributes$style, 'color', 'white'),
+					A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+					A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
+					A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
 					A2(
 					$elm$html$Html$Attributes$attribute,
 					'data-id',
 					$elm$core$String$fromInt(rect.t))
 				]),
-			_List_Nil);
+			_List_fromArray(
+				[
+					$elm$html$Html$text(rect.aa)
+				]));
 	});
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
+var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
+var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -5500,6 +5558,15 @@ var $author$project$Main$view = function (model) {
 			]),
 		_List_fromArray(
 			[
+				A2(
+				$elm$html$Html$input,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$type_('text'),
+						$elm$html$Html$Attributes$value(model.K),
+						$elm$html$Html$Events$onInput($author$project$Main$UpdateRectText)
+					]),
+				_List_Nil),
 				A2(
 				$elm$html$Html$button,
 				_List_fromArray(
@@ -5535,6 +5602,6 @@ var $author$project$Main$view = function (model) {
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$sandbox(
-	{aF: $author$project$Main$init, aN: $author$project$Main$update, aO: $author$project$Main$view});
+	{aH: $author$project$Main$init, aP: $author$project$Main$update, aQ: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));

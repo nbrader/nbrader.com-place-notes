@@ -1,9 +1,11 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, button, div, text)
+import Html exposing (Html, button, div, text, input)
 import Html.Attributes exposing (style)
-import Html.Events exposing (onClick, onMouseDown, on, preventDefaultOn)
+import Html.Events exposing (onClick, onMouseDown, on, preventDefaultOn, onInput)
+import Html.Attributes exposing (style, value, type_)
+
 import Json.Decode as Decode
 import Tuple exposing (pair)
 
@@ -19,6 +21,7 @@ type alias Model =
     , cameraX : Int
     , cameraY : Int
     , mode : Mode
+    , rectText : String -- Add this field to store the input text
     }
 
 type Mode
@@ -35,6 +38,7 @@ type alias Rectangle =
     , y : Int
     , width : Int
     , height : Int
+    , text : String -- Add this field to store the rectangle's text
     }
 
 init : Model
@@ -44,17 +48,20 @@ init =
     , dragging = Nothing
     , cameraX = 0
     , cameraY = 0
-    , mode = MoveMode -- Add this line
+    , mode = MoveMode
+    , rectText = "Write a note here."
     }
 
 -- UPDATE
 type Msg
     = AddRectangle ( Int, Int )
+    | UpdateRectText String
     | MouseDown ( Int, Int )
     | MouseMove (Int, Int)
     | MouseUp
-    | ToggleMode -- Add this line
+    | ToggleMode
     | NoOp
+
 
 update : Msg -> Model -> Model
 update msg model =
@@ -66,6 +73,9 @@ update msg model =
                 DeletionMode ->
                     { model | mode = MoveMode }
         
+        UpdateRectText newText ->
+            { model | rectText = newText }
+
         AddRectangle (x, y) ->
             let
                 newRectangle =
@@ -74,9 +84,11 @@ update msg model =
                     , y = y - 25
                     , width = 100
                     , height = 50
+                    , text = model.rectText -- Use the text from the model
                     }
             in
             { model | rects = newRectangle :: model.rects, nextRectangleId = model.nextRectangleId + 1 }
+        
         
         MouseMove (mouseX, mouseY) ->
             case model.dragging of
@@ -162,12 +174,13 @@ view : Model -> Html Msg
 view model =
     div [ Html.Attributes.style "width" "100%"
         , Html.Attributes.style "height" "100vh"
-        , Html.Events.on "mouseup" (Decode.succeed MouseUp) -- This ensures MouseUp is captured over the entire div
-        , Html.Events.on "mousemove" mouseMoveDecoder -- Consider if this should also be more broadly captured
+        , Html.Events.on "mouseup" (Decode.succeed MouseUp)
+        , Html.Events.on "mousemove" mouseMoveDecoder
         , Html.Events.on "mousedown" mousePositionDecoder
         , preventDragStart
         ]
-        [ button [ onClick (AddRectangle (100 - model.cameraX, 60 - model.cameraY)) ] [ text "Add" ]
+        [ input [ type_ "text", value model.rectText, onInput UpdateRectText ] []
+        , button [ onClick (AddRectangle (100 - model.cameraX, 60 - model.cameraY)) ] [ text "Add" ]
         , button [ onClick ToggleMode ] [ text (if model.mode == MoveMode then "Switch to Deletion Mode" else "Switch to Move Mode") ]
         , div [] (List.map (\rect -> rectangleView model rect) model.rects)
         ]
@@ -181,9 +194,13 @@ rectangleView model rect =
         , style "width" (String.fromInt rect.width ++ "px")
         , style "height" (String.fromInt rect.height ++ "px")
         , style "background-color" "blue"
+        , style "color" "white"
+        , style "display" "flex"
+        , style "align-items" "center"
+        , style "justify-content" "center"
         , Html.Attributes.attribute "data-id" (String.fromInt rect.id)
         ]
-        []
+        [ text rect.text ]
 
 mouseMoveDecoder : Decode.Decoder Msg
 mouseMoveDecoder =

@@ -6,3 +6,8 @@ Write a web app in elm which works for phone and mouse which allows you to creat
     zoom with mouse wheel or pinch
     
     make it usable with mouse or with a phone
+    
+    
+    
+Make an input box for text which is used to fill the next note to be created.
+Make the last dragged rect interacted with (either because it was just created or dragged) marked as selected and make a text 
