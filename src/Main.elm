@@ -3,7 +3,7 @@ module Main exposing (..)
 import Browser
 import Html exposing (Html, button, div, text, input)
 import Html.Attributes exposing (style)
-import Html.Events exposing (onClick, onMouseDown, on, preventDefaultOn, onInput)
+import Html.Events exposing (onClick, onMouseDown, on, preventDefaultOn, onInput, onBlur, onFocus)
 import Html.Attributes exposing (style, value, type_)
 
 import Json.Decode as Decode
@@ -21,7 +21,8 @@ type alias Model =
     , cameraX : Int
     , cameraY : Int
     , mode : Mode
-    , rectText : String -- Add this field to store the input text
+    , rectText : String
+    , allowDrag : Bool
     }
 
 type Mode
@@ -38,7 +39,7 @@ type alias Rectangle =
     , y : Int
     , width : Int
     , height : Int
-    , text : String -- Add this field to store the rectangle's text
+    , text : String
     }
 
 init : Model
@@ -50,6 +51,7 @@ init =
     , cameraY = 0
     , mode = MoveMode
     , rectText = "Write a note here."
+    , allowDrag = True
     }
 
 -- UPDATE
@@ -61,11 +63,19 @@ type Msg
     | MouseUp
     | ToggleMode
     | NoOp
+    | InputFocused
+    | InputBlurred
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
+        InputFocused ->
+            { model | allowDrag = False }
+
+        InputBlurred ->
+            { model | allowDrag = True }
+        
         ToggleMode ->
             case model.mode of
                 MoveMode ->
@@ -108,30 +118,33 @@ update msg model =
             { model | dragging = Nothing }
         
         MouseDown (mouseX, mouseY) ->
-            case model.mode of
-                DeletionMode ->
-                    let
-                        -- Reverse the list to check the rectangles from top to bottom (last drawn to first)
-                        reversedRects = List.reverse model.rects
-                        clickedRect = List.head (List.filter (\rect -> isClickedRectangle (mouseX - model.cameraX, mouseY - model.cameraY) rect) reversedRects)
-                        -- Remove the clicked rectangle from the original list
-                        updatedRects = case clickedRect of
-                            Just rectToBeRemoved -> List.filter (\rect -> rect.id /= rectToBeRemoved.id) model.rects
-                            Nothing -> model.rects
-                    in
-                    { model | rects = updatedRects }
-                MoveMode ->
-                    let
-                        maybeClickedRectangle = findClickedRectangle model.rects (mouseX - model.cameraX, mouseY - model.cameraY)
-                    in
-                    case maybeClickedRectangle of
-                        Just rect ->
-                            let
-                                dragState = DraggingRectangle { draggedRectangleId = rect.id, offsetX = mouseX - rect.x, offsetY = mouseY - rect.y }
-                            in
-                            { model | dragging = Just dragState }
-                        Nothing ->
-                            { model | dragging = Just (DraggingCamera { initialX = mouseX, initialY = mouseY }) }
+            if model.allowDrag then
+                case model.mode of
+                    DeletionMode ->
+                        let
+                            -- Reverse the list to check the rectangles from top to bottom (last drawn to first)
+                            reversedRects = List.reverse model.rects
+                            clickedRect = List.head (List.filter (\rect -> isClickedRectangle (mouseX - model.cameraX, mouseY - model.cameraY) rect) reversedRects)
+                            -- Remove the clicked rectangle from the original list
+                            updatedRects = case clickedRect of
+                                Just rectToBeRemoved -> List.filter (\rect -> rect.id /= rectToBeRemoved.id) model.rects
+                                Nothing -> model.rects
+                        in
+                        { model | rects = updatedRects }
+                    MoveMode ->
+                        let
+                            maybeClickedRectangle = findClickedRectangle model.rects (mouseX - model.cameraX, mouseY - model.cameraY)
+                        in
+                        case maybeClickedRectangle of
+                            Just rect ->
+                                let
+                                    dragState = DraggingRectangle { draggedRectangleId = rect.id, offsetX = mouseX - rect.x, offsetY = mouseY - rect.y }
+                                in
+                                { model | dragging = Just dragState }
+                            Nothing ->
+                                { model | dragging = Just (DraggingCamera { initialX = mouseX, initialY = mouseY }) }
+            else
+                { model | dragging = Nothing }
         
         NoOp ->
             model -- Do nothing
@@ -179,7 +192,12 @@ view model =
         , Html.Events.on "mousedown" mousePositionDecoder
         , preventDragStart
         ]
-        [ input [ type_ "text", value model.rectText, onInput UpdateRectText ] []
+        [ input [ type_ "text"
+                , value model.rectText
+                , onInput UpdateRectText
+                , onFocus InputFocused
+                , onBlur InputBlurred
+                ] []
         , button [ onClick (AddRectangle (100 - model.cameraX, 60 - model.cameraY)) ] [ text "Add" ]
         , button [ onClick ToggleMode ] [ text (if model.mode == MoveMode then "Switch to Deletion Mode" else "Switch to Move Mode") ]
         , div [] (List.map (\rect -> rectangleView model rect) model.rects)
