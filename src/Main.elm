@@ -18,7 +18,12 @@ type alias Model =
     , dragging : Maybe DraggingState
     , cameraX : Int
     , cameraY : Int
+    , mode : Mode
     }
+
+type Mode
+    = MoveMode
+    | DeletionMode
 
 type DraggingState
     = DraggingRectangle { draggedRectangleId : Int, offsetX : Int, offsetY : Int }
@@ -39,6 +44,7 @@ init =
     , dragging = Nothing
     , cameraX = 0
     , cameraY = 0
+    , mode = MoveMode -- Add this line
     }
 
 -- UPDATE
@@ -47,11 +53,19 @@ type Msg
     | MouseDown ( Int, Int )
     | MouseMove (Int, Int)
     | MouseUp
+    | ToggleMode -- Add this line
     | NoOp
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
+        ToggleMode ->
+            case model.mode of
+                MoveMode ->
+                    { model | mode = DeletionMode }
+                DeletionMode ->
+                    { model | mode = MoveMode }
+        
         AddRectangle (x, y) ->
             let
                 newRectangle =
@@ -82,20 +96,39 @@ update msg model =
             { model | dragging = Nothing }
         
         MouseDown (mouseX, mouseY) ->
-            let
-                maybeClickedRectangle = findClickedRectangle model.rects (mouseX - model.cameraX, mouseY - model.cameraY)
-            in
-            case maybeClickedRectangle of
-                Just rect ->
+            case model.mode of
+                DeletionMode ->
                     let
-                        dragState = DraggingRectangle { draggedRectangleId = rect.id, offsetX = mouseX - rect.x, offsetY = mouseY - rect.y }
+                        -- Reverse the list to check the rectangles from top to bottom (last drawn to first)
+                        reversedRects = List.reverse model.rects
+                        clickedRect = List.head (List.filter (\rect -> isClickedRectangle (mouseX - model.cameraX, mouseY - model.cameraY) rect) reversedRects)
+                        -- Remove the clicked rectangle from the original list
+                        updatedRects = case clickedRect of
+                            Just rectToBeRemoved -> List.filter (\rect -> rect.id /= rectToBeRemoved.id) model.rects
+                            Nothing -> model.rects
                     in
-                    { model | dragging = Just dragState }
-                Nothing ->
-                    { model | dragging = Just (DraggingCamera { initialX = mouseX, initialY = mouseY }) }
+                    { model | rects = updatedRects }
+                MoveMode ->
+                    let
+                        maybeClickedRectangle = findClickedRectangle model.rects (mouseX - model.cameraX, mouseY - model.cameraY)
+                    in
+                    case maybeClickedRectangle of
+                        Just rect ->
+                            let
+                                dragState = DraggingRectangle { draggedRectangleId = rect.id, offsetX = mouseX - rect.x, offsetY = mouseY - rect.y }
+                            in
+                            { model | dragging = Just dragState }
+                        Nothing ->
+                            { model | dragging = Just (DraggingCamera { initialX = mouseX, initialY = mouseY }) }
         
         NoOp ->
             model -- Do nothing
+
+-- Helper function to check if a rectangle was clicked
+isClickedRectangle : (Int, Int) -> Rectangle -> Bool
+isClickedRectangle (mouseX, mouseY) rect =
+    mouseX >= rect.x && mouseX <= rect.x + rect.width &&
+    mouseY >= rect.y && mouseY <= rect.y + rect.height
 
 -- Find a rectangle that has been clicked based on the mouse position
 findClickedRectangle : List Rectangle -> (Int, Int) -> Maybe Rectangle
@@ -135,6 +168,7 @@ view model =
         , preventDragStart
         ]
         [ button [ onClick (AddRectangle (100 - model.cameraX, 60 - model.cameraY)) ] [ text "Add" ]
+        , button [ onClick ToggleMode ] [ text (if model.mode == MoveMode then "Switch to Deletion Mode" else "Switch to Move Mode") ]
         , div [] (List.map (\rect -> rectangleView model rect) model.rects)
         ]
 
