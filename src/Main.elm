@@ -1,12 +1,11 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, button, div, text, input)
-import Html.Attributes exposing (style)
-import Html.Events exposing (onClick, onMouseDown, on, preventDefaultOn, onInput, onBlur, onFocus)
+import Html exposing (Html, button, div, text, textarea, input)
 import Html.Attributes exposing (style, value, type_)
-
-import Json.Decode as Decode
+import Html.Events exposing (onClick, onMouseDown, on, preventDefaultOn, onInput, onBlur, onFocus)
+import Json.Decode
+import Json.Encode
 import Tuple exposing (pair)
 
 -- MAIN
@@ -67,7 +66,7 @@ type Msg
     | NoOp
     | PreventDrag
     | CopyTextFromSelectedPlaceNote -- Copy text from the selected PlaceNote
-
+    | UpdateModelFromJson String
 
 update : Msg -> Model -> Model
 update msg model =
@@ -161,6 +160,14 @@ update msg model =
                     { model | inputText = selectedPlaceNoteText }
                 Nothing ->
                     model
+            
+        UpdateModelFromJson jsonString ->
+            case Json.Decode.decodeString modelDecoder jsonString of
+                Ok newModel ->
+                    newModel
+                Err _ ->
+                    -- Handle error, could be logging or setting an error message in the model
+                    model
         
         NoOp ->
             model -- Do nothing
@@ -207,7 +214,7 @@ view : Model -> Html Msg
 view model =
     div [ Html.Attributes.style "width" "100%"
         , Html.Attributes.style "height" "100vh"
-        , Html.Events.on "mouseup" (Decode.succeed MouseUp)
+        , Html.Events.on "mouseup" (Json.Decode.succeed MouseUp)
         , Html.Events.on "mousemove" mouseMoveDecoder
         , Html.Events.on "mousedown" mousePositionDecoder
         , preventDragStart
@@ -221,6 +228,8 @@ view model =
         , button [ onMouseDown PreventDrag, onClick ToggleMode ] [ text (if model.mode == MoveMode then "Switch to Deletion Mode" else "Switch to Move Mode") ]
         , button [ onMouseDown PreventDrag, onClick CopyTextFromSelectedPlaceNote ] [ text "Copy Text from PlaceNote" ] -- Button to copy text from the selected PlaceNote
         , div [] (List.map (\placeNote -> placeNoteView model placeNote) model.placeNotes)
+        , textarea [ onInput UpdateModelFromJson ] [ text (serializeModel model) ]
+        , input [ type_ "text", onInput UpdateModelFromJson ] []
         ]
 
 placeNoteView : Model -> PlaceNote -> Html Msg
@@ -241,19 +250,122 @@ placeNoteView model placeNote =
         ]
         [ text placeNote.text ]
 
-mouseMoveDecoder : Decode.Decoder Msg
+mouseMoveDecoder : Json.Decode.Decoder Msg
 mouseMoveDecoder =
-    Decode.map2 (\clientX clientY -> MouseMove (clientX, clientY))
-        (Decode.field "clientX" Decode.int)
-        (Decode.field "clientY" Decode.int)
+    Json.Decode.map2 (\clientX clientY -> MouseMove (clientX, clientY))
+        (Json.Decode.field "clientX" Json.Decode.int)
+        (Json.Decode.field "clientY" Json.Decode.int)
 
-mousePositionDecoder : Decode.Decoder Msg
+mousePositionDecoder : Json.Decode.Decoder Msg
 mousePositionDecoder =
-    Decode.map2 (\x y -> MouseDown (x, y))
-        (Decode.field "clientX" Decode.int)
-        (Decode.field "clientY" Decode.int)
+    Json.Decode.map2 (\x y -> MouseDown (x, y))
+        (Json.Decode.field "clientX" Json.Decode.int)
+        (Json.Decode.field "clientY" Json.Decode.int)
 
 -- Decoder to ignore the dragstart event's default action
 preventDragStart : Html.Attribute Msg
 preventDragStart =
-    preventDefaultOn "dragstart" (Decode.succeed (NoOp, True))
+    preventDefaultOn "dragstart" (Json.Decode.succeed (NoOp, True))
+
+-- Convert the Model to a JSON string
+serializeModel : Model -> String
+serializeModel model =
+    Json.Encode.encode 2 <| Json.Encode.object
+        [ ( "placeNotes", encodePlaceNotes model.placeNotes )
+        , ( "nextPlaceNoteId", Json.Encode.int model.nextPlaceNoteId )
+        , ( "cameraX", Json.Encode.int model.cameraX )
+        , ( "cameraY", Json.Encode.int model.cameraY )
+        , ( "mode", Json.Encode.string <| case model.mode of
+                                    MoveMode -> "MoveMode"
+                                    DeletionMode -> "DeletionMode" )
+        , ( "inputText", Json.Encode.string model.inputText )
+        , ( "allowDrag", Json.Encode.bool model.allowDrag )
+        , ( "selectedPlaceNoteId", case model.selectedPlaceNoteId of
+            Just id -> Json.Encode.int id
+            Nothing -> Json.Encode.null )
+        ]
+
+encodePlaceNotes : List PlaceNote -> Json.Encode.Value
+encodePlaceNotes notes =
+    let
+        encodeNote : PlaceNote -> Json.Encode.Value
+        encodeNote note =
+            Json.Encode.object
+                [ ("id", Json.Encode.int note.id)
+                , ("x", Json.Encode.int note.x)
+                , ("y", Json.Encode.int note.y)
+                , ("width", Json.Encode.int note.width)
+                , ("height", Json.Encode.int note.height)
+                , ("text", Json.Encode.string note.text)
+                ]
+    in
+    Json.Encode.list encodeNote notes
+
+-- Convert a JSON string to the Model
+deserializeModel : String -> Result String Model
+deserializeModel jsonString =
+    case Json.Decode.decodeString modelDecoder jsonString of
+        Ok model -> Ok model
+        Err error -> Err ("Failed to decode JSON: " ++ Json.Decode.errorToString error)
+
+-- For Debug
+-- deserializeModel : String -> Result String Model
+-- deserializeModel jsonString =
+    -- case Json.Decode.decodeString modelDecoder jsonString of
+        -- Ok model -> Ok model
+        -- Err error -> Err (error |> Debug.toString)
+
+modelDecoder : Json.Decode.Decoder Model
+modelDecoder =
+    map9 Model
+        (Json.Decode.field "placeNotes" <| Json.Decode.list placeNoteDecoder)
+        (Json.Decode.field "nextPlaceNoteId" Json.Decode.int)
+        (Json.Decode.succeed Nothing) -- Default value for `dragging`
+        (Json.Decode.field "cameraX" Json.Decode.int)
+        (Json.Decode.field "cameraY" Json.Decode.int)
+        (Json.Decode.field "mode" <| Json.Decode.map (\m -> if m == "MoveMode" then MoveMode else DeletionMode) Json.Decode.string)
+        (Json.Decode.field "inputText" Json.Decode.string)
+        (Json.Decode.field "allowDrag" Json.Decode.bool)
+        (Json.Decode.maybe <| Json.Decode.field "selectedPlaceNoteId" Json.Decode.int)
+
+placeNoteDecoder : Json.Decode.Decoder PlaceNote
+placeNoteDecoder =
+    map6 PlaceNote
+        (Json.Decode.field "id" Json.Decode.int)
+        (Json.Decode.field "x" Json.Decode.int)
+        (Json.Decode.field "y" Json.Decode.int)
+        (Json.Decode.field "width" Json.Decode.int)
+        (Json.Decode.field "height" Json.Decode.int)
+        (Json.Decode.field "text" Json.Decode.string)
+
+map6 : (a -> b -> c -> d -> e -> f -> result) 
+     -> Json.Decode.Decoder a 
+     -> Json.Decode.Decoder b 
+     -> Json.Decode.Decoder c 
+     -> Json.Decode.Decoder d 
+     -> Json.Decode.Decoder e 
+     -> Json.Decode.Decoder f 
+     -> Json.Decode.Decoder result
+map6 constructor decA decB decC decD decE decF =
+    Json.Decode.map5 constructor decA decB decC decD decE
+        |> Json.Decode.andThen (\valueSoFar ->
+            Json.Decode.map (\fValue -> valueSoFar fValue) decF
+           )
+
+map9 : (a -> b -> c -> d -> e -> f -> g -> h -> i -> result) 
+     -> Json.Decode.Decoder a 
+     -> Json.Decode.Decoder b 
+     -> Json.Decode.Decoder c 
+     -> Json.Decode.Decoder d 
+     -> Json.Decode.Decoder e 
+     -> Json.Decode.Decoder f 
+     -> Json.Decode.Decoder g 
+     -> Json.Decode.Decoder h 
+     -> Json.Decode.Decoder i 
+     -> Json.Decode.Decoder result
+map9 constructor decA decB decC decD decE decF decG decH decI =
+    Json.Decode.map5 (\a b c d e -> constructor a b c d e) decA decB decC decD decE
+        |> Json.Decode.andThen (\valueSoFar5 ->
+            Json.Decode.map4 (\f g h i -> valueSoFar5 f g h i) decF decG decH decI
+        )
+
