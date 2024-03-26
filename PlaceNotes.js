@@ -5944,15 +5944,7 @@ var $author$project$Main$view = function (model) {
 					[
 						$elm$html$Html$text(
 						$author$project$Main$serializeModel(model))
-					])),
-				A2(
-				$elm$html$Html$input,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$type_('text'),
-						$elm$html$Html$Events$onInput($author$project$Main$UpdateModelFromJson)
-					]),
-				_List_Nil)
+					]))
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$sandbox(

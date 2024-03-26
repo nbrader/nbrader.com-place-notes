@@ -229,7 +229,6 @@ view model =
         , button [ onMouseDown PreventDrag, onClick CopyTextFromSelectedPlaceNote ] [ text "Copy Text from PlaceNote" ] -- Button to copy text from the selected PlaceNote
         , div [] (List.map (\placeNote -> placeNoteView model placeNote) model.placeNotes)
         , textarea [ onInput UpdateModelFromJson ] [ text (serializeModel model) ]
-        , input [ type_ "text", onInput UpdateModelFromJson ] []
         ]
 
 placeNoteView : Model -> PlaceNote -> Html Msg
