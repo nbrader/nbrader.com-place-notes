@@ -214,6 +214,7 @@ view : Model -> Html Msg
 view model =
     div [ Html.Attributes.style "width" "100%"
         , Html.Attributes.style "height" "100vh"
+        , Html.Attributes.style "background-color" "black"
         , Html.Events.on "mouseup" (Json.Decode.succeed MouseUp)
         , Html.Events.on "mousemove" mouseMoveDecoder
         , Html.Events.on "mousedown" mousePositionDecoder
@@ -239,7 +240,8 @@ placeNoteView model placeNote =
         , style "top" (String.fromInt (placeNote.y + model.cameraY) ++ "px")
         , style "width" (String.fromInt placeNote.width ++ "px")
         , style "height" (String.fromInt placeNote.height ++ "px")
-        , style "background-color" "blue"
+        , style "background-color" "#007bff"
+        , style "border-radius" "8px"
         , style "color" "white"
         , style "display" "flex"
         , style "align-items" "center"
@@ -367,4 +369,3 @@ map9 constructor decA decB decC decD decE decF decG decH decI =
         |> Json.Decode.andThen (\valueSoFar5 ->
             Json.Decode.map4 (\f g h i -> valueSoFar5 f g h i) decF decG decH decI
         )
-

@@ -20,3 +20,12 @@ REM echo Zipped size: %size% bytes
 
 pause
 endlocal
+
+PS C:\My Files\Nux-Git\nbrader.com-place-notes> .\Compile.bat
+Success!
+
+    Main ---> PlaceNotes.js
+
+'uglifyjs' is not recognized as an internal or external command,
+operable program or batch file.
+PS C:\My Files\Nux-Git\nbrader.com-place-notes>

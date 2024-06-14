@@ -5713,7 +5713,8 @@ var $author$project$Main$placeNoteView = F2(
 					$elm$html$Html$Attributes$style,
 					'height',
 					$elm$core$String$fromInt(placeNote.I) + 'px'),
-					A2($elm$html$Html$Attributes$style, 'background-color', 'blue'),
+					A2($elm$html$Html$Attributes$style, 'background-color', '#007bff'),
+					A2($elm$html$Html$Attributes$style, 'border-radius', '8px'),
 					A2($elm$html$Html$Attributes$style, 'color', 'white'),
 					A2($elm$html$Html$Attributes$style, 'display', 'flex'),
 					A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
@@ -5869,6 +5870,7 @@ var $author$project$Main$view = function (model) {
 			[
 				A2($elm$html$Html$Attributes$style, 'width', '100%'),
 				A2($elm$html$Html$Attributes$style, 'height', '100vh'),
+				A2($elm$html$Html$Attributes$style, 'background-color', 'black'),
 				A2(
 				$elm$html$Html$Events$on,
 				'mouseup',
