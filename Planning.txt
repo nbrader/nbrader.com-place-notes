@@ -1,0 +1,2 @@
+Enhancements:
+    - Add the ability to add a text file where every new line is added as a place note
