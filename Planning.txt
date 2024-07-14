@@ -1,2 +1,5 @@
+Bugs:
+    - Make it so that when the text is pasted into the mark-up box, it continues to be editable by changes in the app
+
 Enhancements:
     - Add the ability to add a text file where every new line is added as a place note
