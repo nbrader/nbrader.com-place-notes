@@ -35,6 +35,8 @@ type DraggingState
         { draggedPlaceNoteId : Int -- ID of note being dragged
         , offsetX : Int            -- Mouse offset from note's left edge
         , offsetY : Int            -- Mouse offset from note's top edge
+        , currentMouseX : Int      -- Current mouse X position (for live preview)
+        , currentMouseY : Int      -- Current mouse Y position (for live preview)
         }
     | DraggingCamera
         { initialX : Int -- Mouse X when drag started
@@ -126,10 +128,11 @@ update msg model =
         
         
         MouseMove (mouseX, mouseY) ->
-            -- Don't sync JSON during mouse moves for performance - will sync on MouseUp
+            -- O(1) operation: just update dragging state, don't touch the list
+            -- Position calculated on-the-fly in view for massive performance gain
             case model.dragging of
-                Just (DraggingPlaceNote { draggedPlaceNoteId, offsetX, offsetY}) ->
-                    { model | placeNotes = List.map (updatePlaceNotePosition (mouseX, mouseY) draggedPlaceNoteId (offsetX, offsetY)) model.placeNotes }
+                Just (DraggingPlaceNote dragState) ->
+                    { model | dragging = Just (DraggingPlaceNote { dragState | currentMouseX = mouseX, currentMouseY = mouseY }) }
                 Just (DraggingCamera { initialX, initialY }) ->
                     let
                         dx = mouseX - initialX
@@ -141,7 +144,23 @@ update msg model =
                     model
 
         MouseUp ->
-            syncJsonTextArea { model | dragging = Nothing, allowDrag = True }
+            -- Apply final position when dragging ends (O(n) once instead of O(n) per move)
+            let
+                updatedPlaceNotes =
+                    case model.dragging of
+                        Just (DraggingPlaceNote { draggedPlaceNoteId, offsetX, offsetY, currentMouseX, currentMouseY }) ->
+                            List.map
+                                (\placeNote ->
+                                    if placeNote.id == draggedPlaceNoteId then
+                                        { placeNote | x = currentMouseX - offsetX, y = currentMouseY - offsetY }
+                                    else
+                                        placeNote
+                                )
+                                model.placeNotes
+                        _ ->
+                            model.placeNotes
+            in
+            syncJsonTextArea { model | placeNotes = updatedPlaceNotes, dragging = Nothing, allowDrag = True }
         
         MouseDown (mouseX, mouseY) ->
             syncJsonTextArea <|
@@ -158,8 +177,14 @@ update msg model =
                         MoveMode ->
                             case findClickedPlaceNote model.placeNotes (mouseX - model.cameraX, mouseY - model.cameraY) of
                                 Just placeNote ->
-                                    { model | dragging = Just (DraggingPlaceNote { draggedPlaceNoteId = placeNote.id, offsetX = mouseX - placeNote.x, offsetY = mouseY - placeNote.y })
-                                            , selectedPlaceNoteId = Just placeNote.id }
+                                    { model | dragging = Just (DraggingPlaceNote
+                                        { draggedPlaceNoteId = placeNote.id
+                                        , offsetX = mouseX - placeNote.x
+                                        , offsetY = mouseY - placeNote.y
+                                        , currentMouseX = mouseX
+                                        , currentMouseY = mouseY
+                                        })
+                                    , selectedPlaceNoteId = Just placeNote.id }
                                 Nothing ->
                                     { model | dragging = Just (DraggingCamera { initialX = mouseX, initialY = mouseY }) }
                 else
@@ -236,15 +261,6 @@ findClickedPlaceNote placeNotes (mouseX, mouseY) =
             mouseY >= placeNote.y && mouseY <= placeNote.y + placeNote.height)
         |> List.head
 
--- Update position of a placeNote based on the current mouse position
--- and the dragging state
-updatePlaceNotePosition : (Int, Int) -> Int -> (Int, Int) -> PlaceNote -> PlaceNote
-updatePlaceNotePosition (mouseX, mouseY) draggedPlaceNoteId (offsetX, offsetY) placeNote =
-    if placeNote.id == draggedPlaceNoteId then
-        { placeNote | x = mouseX - offsetX, y = mouseY - offsetY }
-    else
-        placeNote
-
 -- VIEW
 view : Model -> Html Msg
 view model =
@@ -270,10 +286,22 @@ view model =
 
 placeNoteView : Model -> PlaceNote -> Html Msg
 placeNoteView model placeNote =
+    let
+        -- Calculate position on-the-fly if this note is being dragged (O(1) per render)
+        (displayX, displayY) =
+            case model.dragging of
+                Just (DraggingPlaceNote { draggedPlaceNoteId, offsetX, offsetY, currentMouseX, currentMouseY }) ->
+                    if placeNote.id == draggedPlaceNoteId then
+                        (currentMouseX - offsetX, currentMouseY - offsetY)
+                    else
+                        (placeNote.x, placeNote.y)
+                _ ->
+                    (placeNote.x, placeNote.y)
+    in
     div
         [ style "position" "absolute"
-        , style "left" (String.fromInt (placeNote.x + model.cameraX) ++ "px")
-        , style "top" (String.fromInt (placeNote.y + model.cameraY) ++ "px")
+        , style "left" (String.fromInt (displayX + model.cameraX) ++ "px")
+        , style "top" (String.fromInt (displayY + model.cameraY) ++ "px")
         , style "width" (String.fromInt placeNote.width ++ "px")
         , style "height" (String.fromInt placeNote.height ++ "px")
         , style "background-color" "#007bff"
