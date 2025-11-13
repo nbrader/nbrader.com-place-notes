@@ -184,7 +184,9 @@ update msg model =
                                         , currentMouseX = mouseX
                                         , currentMouseY = mouseY
                                         })
-                                    , selectedPlaceNoteId = Just placeNote.id }
+                                    , selectedPlaceNoteId = Just placeNote.id
+                                    , inputText = placeNote.text  -- Populate input for editing
+                                    }
                                 Nothing ->
                                     { model | dragging = Just (DraggingCamera { initialX = mouseX, initialY = mouseY }) }
                 else
