@@ -23,6 +23,7 @@ type alias Model =
     , inputText : String -- Text content of the PlaceNote
     , allowDrag : Bool
     , selectedPlaceNoteId : Maybe Int -- Currently selected PlaceNote
+    , jsonTextArea : String -- Raw content of the JSON textarea
     }
 
 type Mode
@@ -44,16 +45,21 @@ type alias PlaceNote =
 
 init : Model
 init =
-    { placeNotes = []
-    , nextPlaceNoteId = 0
-    , dragging = Nothing
-    , cameraX = 0
-    , cameraY = 0
-    , mode = MoveMode
-    , inputText = "Write a note here." -- Default text for a new PlaceNote
-    , allowDrag = True
-    , selectedPlaceNoteId = Nothing
-    }
+    let
+        initialModel =
+            { placeNotes = []
+            , nextPlaceNoteId = 0
+            , dragging = Nothing
+            , cameraX = 0
+            , cameraY = 0
+            , mode = MoveMode
+            , inputText = "Write a note here." -- Default text for a new PlaceNote
+            , allowDrag = True
+            , selectedPlaceNoteId = Nothing
+            , jsonTextArea = "" -- Placeholder, will be set below
+            }
+    in
+    { initialModel | jsonTextArea = serializeModel initialModel }
 
 -- UPDATE
 type Msg
@@ -72,26 +78,27 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         PreventDrag ->
-            { model | allowDrag = False }
-        
+            syncJsonTextArea { model | allowDrag = False }
+
         ToggleMode ->
-            case model.mode of
-                MoveMode ->
-                    { model | mode = DeletionMode }
-                DeletionMode ->
-                    { model | mode = MoveMode }
-        
+            syncJsonTextArea <|
+                case model.mode of
+                    MoveMode ->
+                        { model | mode = DeletionMode }
+                    DeletionMode ->
+                        { model | mode = MoveMode }
+
         UpdatePlaceNoteText newText ->
             let
-                updatedPlaceNotes = 
+                updatedPlaceNotes =
                     case model.selectedPlaceNoteId of
                         Just selectedId ->
                             List.map (\placeNote -> if placeNote.id == selectedId then { placeNote | text = newText, width = calculateTextWidth newText } else placeNote) model.placeNotes
                         Nothing ->
                             model.placeNotes
             in
-            { model | inputText = newText, placeNotes = updatedPlaceNotes }
-        
+            syncJsonTextArea { model | inputText = newText, placeNotes = updatedPlaceNotes }
+
         AddPlaceNote (x, y) ->
             let
                 textWidth = calculateTextWidth model.inputText
@@ -105,69 +112,78 @@ update msg model =
                     , text = model.inputText
                     }
             in
-            { model | placeNotes = newPlaceNote :: model.placeNotes
-                    , nextPlaceNoteId = newPlaceNoteId + 1
-                    , selectedPlaceNoteId = Just newPlaceNoteId } -- Set as selected
+            syncJsonTextArea
+                { model | placeNotes = newPlaceNote :: model.placeNotes
+                        , nextPlaceNoteId = newPlaceNoteId + 1
+                        , selectedPlaceNoteId = Just newPlaceNoteId } -- Set as selected
         
         
         MouseMove (mouseX, mouseY) ->
-            case model.dragging of
-                Just (DraggingPlaceNote { draggedPlaceNoteId, offsetX, offsetY}) ->
-                    { model | placeNotes = List.map (updatePlaceNotePosition (mouseX, mouseY) draggedPlaceNoteId (offsetX, offsetY)) model.placeNotes }
-                Just (DraggingCamera { initialX, initialY }) ->
-                    let
-                        dx = mouseX - initialX
-                        dy = mouseY - initialY
-                    in
-                    -- Update the camera position in the model
-                    { model | cameraX = model.cameraX + dx, cameraY = model.cameraY + dy, dragging = Just (DraggingCamera { initialX = mouseX, initialY = mouseY }) }
-                Nothing ->
-                    model
-            
+            syncJsonTextArea <|
+                case model.dragging of
+                    Just (DraggingPlaceNote { draggedPlaceNoteId, offsetX, offsetY}) ->
+                        { model | placeNotes = List.map (updatePlaceNotePosition (mouseX, mouseY) draggedPlaceNoteId (offsetX, offsetY)) model.placeNotes }
+                    Just (DraggingCamera { initialX, initialY }) ->
+                        let
+                            dx = mouseX - initialX
+                            dy = mouseY - initialY
+                        in
+                        -- Update the camera position in the model
+                        { model | cameraX = model.cameraX + dx, cameraY = model.cameraY + dy, dragging = Just (DraggingCamera { initialX = mouseX, initialY = mouseY }) }
+                    Nothing ->
+                        model
+
         MouseUp ->
-            { model | dragging = Nothing, allowDrag = True }
+            syncJsonTextArea { model | dragging = Nothing, allowDrag = True }
         
         MouseDown (mouseX, mouseY) ->
-            if model.allowDrag then
-                case model.mode of
-                    DeletionMode ->
-                        let
-                            -- Reverse the list to check the placeNotes from top to bottom (last drawn to first)
-                            reversedPlaceNotes = List.reverse model.placeNotes
-                            clickedPlaceNote = List.head (List.filter (\placeNote -> isClickedPlaceNote (mouseX - model.cameraX, mouseY - model.cameraY) placeNote) reversedPlaceNotes)
-                            -- Remove the clicked placeNote from the original list
-                            updatedPlaceNotes = case clickedPlaceNote of
-                                Just placeNoteToBeRemoved -> List.filter (\placeNote -> placeNote.id /= placeNoteToBeRemoved.id) model.placeNotes
-                                Nothing -> model.placeNotes
-                        in
-                        { model | placeNotes = updatedPlaceNotes }
-                    MoveMode ->
-                        case findClickedPlaceNote model.placeNotes (mouseX - model.cameraX, mouseY - model.cameraY) of
-                            Just placeNote ->
-                                { model | dragging = Just (DraggingPlaceNote { draggedPlaceNoteId = placeNote.id, offsetX = mouseX - placeNote.x, offsetY = mouseY - placeNote.y })
-                                        , selectedPlaceNoteId = Just placeNote.id }
-                            Nothing ->
-                                { model | dragging = Just (DraggingCamera { initialX = mouseX, initialY = mouseY }) }
-            else
-                { model | dragging = Nothing }
-        
+            syncJsonTextArea <|
+                if model.allowDrag then
+                    case model.mode of
+                        DeletionMode ->
+                            let
+                                -- Reverse the list to check the placeNotes from top to bottom (last drawn to first)
+                                reversedPlaceNotes = List.reverse model.placeNotes
+                                clickedPlaceNote = List.head (List.filter (\placeNote -> isClickedPlaceNote (mouseX - model.cameraX, mouseY - model.cameraY) placeNote) reversedPlaceNotes)
+                                -- Remove the clicked placeNote from the original list
+                                updatedPlaceNotes = case clickedPlaceNote of
+                                    Just placeNoteToBeRemoved -> List.filter (\placeNote -> placeNote.id /= placeNoteToBeRemoved.id) model.placeNotes
+                                    Nothing -> model.placeNotes
+                            in
+                            { model | placeNotes = updatedPlaceNotes }
+                        MoveMode ->
+                            case findClickedPlaceNote model.placeNotes (mouseX - model.cameraX, mouseY - model.cameraY) of
+                                Just placeNote ->
+                                    { model | dragging = Just (DraggingPlaceNote { draggedPlaceNoteId = placeNote.id, offsetX = mouseX - placeNote.x, offsetY = mouseY - placeNote.y })
+                                            , selectedPlaceNoteId = Just placeNote.id }
+                                Nothing ->
+                                    { model | dragging = Just (DraggingCamera { initialX = mouseX, initialY = mouseY }) }
+                else
+                    { model | dragging = Nothing }
+
         CopyTextFromSelectedPlaceNote ->
-            case model.selectedPlaceNoteId of
-                Just selectedId ->
-                    let
-                        selectedPlaceNoteText = List.head (List.filter (\placeNote -> placeNote.id == selectedId) model.placeNotes) |> Maybe.map (\placeNote -> placeNote.text) |> Maybe.withDefault model.inputText
-                    in
-                    { model | inputText = selectedPlaceNoteText }
-                Nothing ->
-                    model
+            syncJsonTextArea <|
+                case model.selectedPlaceNoteId of
+                    Just selectedId ->
+                        let
+                            selectedPlaceNoteText = List.head (List.filter (\placeNote -> placeNote.id == selectedId) model.placeNotes) |> Maybe.map (\placeNote -> placeNote.text) |> Maybe.withDefault model.inputText
+                        in
+                        { model | inputText = selectedPlaceNoteText }
+                    Nothing ->
+                        model
             
         UpdateModelFromJson jsonString ->
+            -- Always update the textarea content so user can edit freely
+            let
+                modelWithUpdatedTextArea = { model | jsonTextArea = jsonString }
+            in
             case Json.Decode.decodeString modelDecoder jsonString of
-                Ok newModel ->
-                    newModel
+                Ok decodedModel ->
+                    -- Valid JSON: apply the decoded model but preserve the textarea content
+                    { decodedModel | jsonTextArea = jsonString }
                 Err _ ->
-                    -- Handle error, could be logging or setting an error message in the model
-                    model
+                    -- Invalid JSON: keep old model but update textarea so user can continue editing
+                    modelWithUpdatedTextArea
         
         NoOp ->
             model -- Do nothing
@@ -175,6 +191,11 @@ update msg model =
 calculateTextWidth : String -> Int
 calculateTextWidth text =
     8 * String.length text -- Approximate width calculation for PlaceNote text
+
+-- Helper function to sync jsonTextArea when model changes from UI interactions
+syncJsonTextArea : Model -> Model
+syncJsonTextArea model =
+    { model | jsonTextArea = serializeModel model }
 
 -- Helper function to check if a placeNote was clicked
 isClickedPlaceNote : (Int, Int) -> PlaceNote -> Bool
@@ -229,7 +250,7 @@ view model =
         , button [ onMouseDown PreventDrag, onClick ToggleMode ] [ text (if model.mode == MoveMode then "Switch to Deletion Mode" else "Switch to Move Mode") ]
         , button [ onMouseDown PreventDrag, onClick CopyTextFromSelectedPlaceNote ] [ text "Copy Text from PlaceNote" ] -- Button to copy text from the selected PlaceNote
         , div [] (List.map (\placeNote -> placeNoteView model placeNote) model.placeNotes)
-        , textarea [ onInput UpdateModelFromJson, value (serializeModel model) ] []
+        , textarea [ onInput UpdateModelFromJson, value model.jsonTextArea ] []
         ]
 
 placeNoteView : Model -> PlaceNote -> Html Msg
@@ -318,7 +339,7 @@ deserializeModel jsonString =
 
 modelDecoder : Json.Decode.Decoder Model
 modelDecoder =
-    map9 Model
+    map10 Model
         (Json.Decode.field "placeNotes" <| Json.Decode.list placeNoteDecoder)
         (Json.Decode.field "nextPlaceNoteId" Json.Decode.int)
         (Json.Decode.succeed Nothing) -- Default value for `dragging`
@@ -328,6 +349,7 @@ modelDecoder =
         (Json.Decode.field "inputText" Json.Decode.string)
         (Json.Decode.field "allowDrag" Json.Decode.bool)
         (Json.Decode.maybe <| Json.Decode.field "selectedPlaceNoteId" Json.Decode.int)
+        (Json.Decode.succeed "") -- Default value for `jsonTextArea` (not serialized, managed separately)
 
 placeNoteDecoder : Json.Decode.Decoder PlaceNote
 placeNoteDecoder =
@@ -353,19 +375,37 @@ map6 constructor decA decB decC decD decE decF =
             Json.Decode.map (\fValue -> valueSoFar fValue) decF
            )
 
-map9 : (a -> b -> c -> d -> e -> f -> g -> h -> i -> result) 
-     -> Json.Decode.Decoder a 
-     -> Json.Decode.Decoder b 
-     -> Json.Decode.Decoder c 
-     -> Json.Decode.Decoder d 
-     -> Json.Decode.Decoder e 
-     -> Json.Decode.Decoder f 
-     -> Json.Decode.Decoder g 
-     -> Json.Decode.Decoder h 
-     -> Json.Decode.Decoder i 
+map9 : (a -> b -> c -> d -> e -> f -> g -> h -> i -> result)
+     -> Json.Decode.Decoder a
+     -> Json.Decode.Decoder b
+     -> Json.Decode.Decoder c
+     -> Json.Decode.Decoder d
+     -> Json.Decode.Decoder e
+     -> Json.Decode.Decoder f
+     -> Json.Decode.Decoder g
+     -> Json.Decode.Decoder h
+     -> Json.Decode.Decoder i
      -> Json.Decode.Decoder result
 map9 constructor decA decB decC decD decE decF decG decH decI =
     Json.Decode.map5 (\a b c d e -> constructor a b c d e) decA decB decC decD decE
         |> Json.Decode.andThen (\valueSoFar5 ->
             Json.Decode.map4 (\f g h i -> valueSoFar5 f g h i) decF decG decH decI
+        )
+
+map10 : (a -> b -> c -> d -> e -> f -> g -> h -> i -> j -> result)
+      -> Json.Decode.Decoder a
+      -> Json.Decode.Decoder b
+      -> Json.Decode.Decoder c
+      -> Json.Decode.Decoder d
+      -> Json.Decode.Decoder e
+      -> Json.Decode.Decoder f
+      -> Json.Decode.Decoder g
+      -> Json.Decode.Decoder h
+      -> Json.Decode.Decoder i
+      -> Json.Decode.Decoder j
+      -> Json.Decode.Decoder result
+map10 constructor decA decB decC decD decE decF decG decH decI decJ =
+    Json.Decode.map5 (\a b c d e -> constructor a b c d e) decA decB decC decD decE
+        |> Json.Decode.andThen (\valueSoFar5 ->
+            Json.Decode.map5 (\f g h i j -> valueSoFar5 f g h i j) decF decG decH decI decJ
         )
