@@ -14,33 +14,40 @@ main =
 
 -- MODEL
 type alias Model =
-    { placeNotes : List PlaceNote -- List of PlaceNotes
-    , nextPlaceNoteId : Int
-    , dragging : Maybe DraggingState
-    , cameraX : Int
-    , cameraY : Int
-    , mode : Mode
-    , inputText : String -- Text content of the PlaceNote
-    , allowDrag : Bool
-    , selectedPlaceNoteId : Maybe Int -- Currently selected PlaceNote
-    , jsonTextArea : String -- Raw content of the JSON textarea
+    { placeNotes : List PlaceNote -- List of notes (newest at head due to :: prepend)
+    , nextPlaceNoteId : Int -- Auto-incrementing ID for new notes
+    , dragging : Maybe DraggingState -- Current drag state (note or camera)
+    , cameraX : Int -- Camera X offset (positive = scrolled right)
+    , cameraY : Int -- Camera Y offset (positive = scrolled down)
+    , mode : Mode -- Current interaction mode (Move or Deletion)
+    , inputText : String -- Current text in input field (synced with selected note if any)
+    , allowDrag : Bool -- False when interacting with UI elements to prevent accidental dragging
+    , selectedPlaceNoteId : Maybe Int -- ID of currently selected note (shown with red border)
+    , jsonTextArea : String -- Raw textarea content for JSON import/export (allows editing)
     }
 
 type Mode
-    = MoveMode
-    | DeletionMode
+    = MoveMode      -- Can drag notes and camera
+    | DeletionMode  -- Click notes to delete them
 
 type DraggingState
-    = DraggingPlaceNote { draggedPlaceNoteId : Int, offsetX : Int, offsetY : Int } -- State when dragging a PlaceNote
-    | DraggingCamera { initialX : Int, initialY : Int }
+    = DraggingPlaceNote
+        { draggedPlaceNoteId : Int -- ID of note being dragged
+        , offsetX : Int            -- Mouse offset from note's left edge
+        , offsetY : Int            -- Mouse offset from note's top edge
+        }
+    | DraggingCamera
+        { initialX : Int -- Mouse X when drag started
+        , initialY : Int -- Mouse Y when drag started
+        }
 
 type alias PlaceNote =
-    { id : Int
-    , x : Int
-    , y : Int
-    , width : Int
-    , height : Int
-    , text : String -- Text displayed on the PlaceNote
+    { id : Int     -- Unique identifier (never reused)
+    , x : Int      -- X position in world space (not screen space)
+    , y : Int      -- Y position in world space (not screen space)
+    , width : Int  -- Note width in pixels (auto-calculated from text)
+    , height : Int -- Note height in pixels (currently fixed at 50)
+    , text : String -- Text content displayed on the note
     }
 
 init : Model
@@ -190,7 +197,8 @@ update msg model =
 
 calculateTextWidth : String -> Int
 calculateTextWidth text =
-    8 * String.length text -- Approximate width calculation for PlaceNote text
+    -- Approximate width calculation with minimum width to ensure notes are always visible/clickable
+    max 40 (8 * String.length text)
 
 -- Update a placeNote's text and recalculate width if it matches the given ID
 updatePlaceNoteTextById : Int -> String -> PlaceNote -> PlaceNote
@@ -218,12 +226,11 @@ findPlaceNoteById targetId placeNotes =
                 findPlaceNoteById targetId rest
 
 -- Find a placeNote that has been clicked based on the mouse position
--- Searches in visual z-order (last drawn = on top, which is last in list due to rendering order)
+-- Searches in visual z-order: newest notes (list head) render last and appear on top
 findClickedPlaceNote : List PlaceNote -> (Int, Int) -> Maybe PlaceNote
 findClickedPlaceNote placeNotes (mouseX, mouseY) =
-    -- Reverse to check from visual top to bottom (last drawn to first drawn)
+    -- Check from list head (newest) to tail (oldest) = visual top to bottom
     placeNotes
-        |> List.reverse
         |> List.filter (\placeNote ->
             mouseX >= placeNote.x && mouseX <= placeNote.x + placeNote.width &&
             mouseY >= placeNote.y && mouseY <= placeNote.y + placeNote.height)
@@ -257,7 +264,7 @@ view model =
         , button [ onMouseDown PreventDrag, onClick (AddPlaceNote (100 - model.cameraX, 60 - model.cameraY)) ] [ text "Add PlaceNote" ] -- Button to add a new PlaceNote
         , button [ onMouseDown PreventDrag, onClick ToggleMode ] [ text (if model.mode == MoveMode then "Switch to Deletion Mode" else "Switch to Move Mode") ]
         , button [ onMouseDown PreventDrag, onClick CopyTextFromSelectedPlaceNote ] [ text "Copy Text from PlaceNote" ] -- Button to copy text from the selected PlaceNote
-        , div [] (List.map (\placeNote -> placeNoteView model placeNote) model.placeNotes)
+        , div [] (model.placeNotes |> List.reverse |> List.map (\placeNote -> placeNoteView model placeNote))
         , textarea [ onInput UpdateModelFromJson, value model.jsonTextArea ] []
         ]
 
