@@ -119,19 +119,19 @@ update msg model =
         
         
         MouseMove (mouseX, mouseY) ->
-            syncJsonTextArea <|
-                case model.dragging of
-                    Just (DraggingPlaceNote { draggedPlaceNoteId, offsetX, offsetY}) ->
-                        { model | placeNotes = List.map (updatePlaceNotePosition (mouseX, mouseY) draggedPlaceNoteId (offsetX, offsetY)) model.placeNotes }
-                    Just (DraggingCamera { initialX, initialY }) ->
-                        let
-                            dx = mouseX - initialX
-                            dy = mouseY - initialY
-                        in
-                        -- Update the camera position in the model
-                        { model | cameraX = model.cameraX + dx, cameraY = model.cameraY + dy, dragging = Just (DraggingCamera { initialX = mouseX, initialY = mouseY }) }
-                    Nothing ->
-                        model
+            -- Don't sync JSON during mouse moves for performance - will sync on MouseUp
+            case model.dragging of
+                Just (DraggingPlaceNote { draggedPlaceNoteId, offsetX, offsetY}) ->
+                    { model | placeNotes = List.map (updatePlaceNotePosition (mouseX, mouseY) draggedPlaceNoteId (offsetX, offsetY)) model.placeNotes }
+                Just (DraggingCamera { initialX, initialY }) ->
+                    let
+                        dx = mouseX - initialX
+                        dy = mouseY - initialY
+                    in
+                    -- Update the camera position in the model
+                    { model | cameraX = model.cameraX + dx, cameraY = model.cameraY + dy, dragging = Just (DraggingCamera { initialX = mouseX, initialY = mouseY }) }
+                Nothing ->
+                    model
 
         MouseUp ->
             syncJsonTextArea { model | dragging = Nothing, allowDrag = True }
