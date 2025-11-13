@@ -93,7 +93,7 @@ update msg model =
                 updatedPlaceNotes =
                     case model.selectedPlaceNoteId of
                         Just selectedId ->
-                            List.map (\placeNote -> if placeNote.id == selectedId then { placeNote | text = newText, width = calculateTextWidth newText } else placeNote) model.placeNotes
+                            List.map (updatePlaceNoteTextById selectedId newText) model.placeNotes
                         Nothing ->
                             model.placeNotes
             in
@@ -142,10 +142,7 @@ update msg model =
                     case model.mode of
                         DeletionMode ->
                             let
-                                -- Reverse the list to check the placeNotes from top to bottom (last drawn to first)
-                                reversedPlaceNotes = List.reverse model.placeNotes
-                                clickedPlaceNote = List.head (List.filter (\placeNote -> isClickedPlaceNote (mouseX - model.cameraX, mouseY - model.cameraY) placeNote) reversedPlaceNotes)
-                                -- Remove the clicked placeNote from the original list
+                                clickedPlaceNote = findClickedPlaceNote model.placeNotes (mouseX - model.cameraX, mouseY - model.cameraY)
                                 updatedPlaceNotes = case clickedPlaceNote of
                                     Just placeNoteToBeRemoved -> List.filter (\placeNote -> placeNote.id /= placeNoteToBeRemoved.id) model.placeNotes
                                     Nothing -> model.placeNotes
@@ -166,7 +163,10 @@ update msg model =
                 case model.selectedPlaceNoteId of
                     Just selectedId ->
                         let
-                            selectedPlaceNoteText = List.head (List.filter (\placeNote -> placeNote.id == selectedId) model.placeNotes) |> Maybe.map (\placeNote -> placeNote.text) |> Maybe.withDefault model.inputText
+                            selectedPlaceNoteText =
+                                findPlaceNoteById selectedId model.placeNotes
+                                    |> Maybe.map .text
+                                    |> Maybe.withDefault model.inputText
                         in
                         { model | inputText = selectedPlaceNoteText }
                     Nothing ->
@@ -192,29 +192,42 @@ calculateTextWidth : String -> Int
 calculateTextWidth text =
     8 * String.length text -- Approximate width calculation for PlaceNote text
 
+-- Update a placeNote's text and recalculate width if it matches the given ID
+updatePlaceNoteTextById : Int -> String -> PlaceNote -> PlaceNote
+updatePlaceNoteTextById targetId newText placeNote =
+    if placeNote.id == targetId then
+        { placeNote | text = newText, width = calculateTextWidth newText }
+    else
+        placeNote
+
 -- Helper function to sync jsonTextArea when model changes from UI interactions
 syncJsonTextArea : Model -> Model
 syncJsonTextArea model =
     { model | jsonTextArea = serializeModel model }
 
--- Helper function to check if a placeNote was clicked
-isClickedPlaceNote : (Int, Int) -> PlaceNote -> Bool
-isClickedPlaceNote (mouseX, mouseY) placeNote =
-    mouseX >= placeNote.x && mouseX <= placeNote.x + placeNote.width &&
-    mouseY >= placeNote.y && mouseY <= placeNote.y + placeNote.height
-
--- Find a placeNote that has been clicked based on the mouse position
-findClickedPlaceNote : List PlaceNote -> (Int, Int) -> Maybe PlaceNote
-findClickedPlaceNote placeNotes (mouseX, mouseY) =
+-- Find a placeNote by ID (stops at first match for efficiency)
+findPlaceNoteById : Int -> List PlaceNote -> Maybe PlaceNote
+findPlaceNoteById targetId placeNotes =
     case placeNotes of
         [] ->
             Nothing
         placeNote :: rest ->
-            if mouseX >= placeNote.x && mouseX <= placeNote.x + placeNote.width &&
-               mouseY >= placeNote.y && mouseY <= placeNote.y + placeNote.height then
+            if placeNote.id == targetId then
                 Just placeNote
             else
-                findClickedPlaceNote rest (mouseX, mouseY)
+                findPlaceNoteById targetId rest
+
+-- Find a placeNote that has been clicked based on the mouse position
+-- Searches in visual z-order (last drawn = on top, which is last in list due to rendering order)
+findClickedPlaceNote : List PlaceNote -> (Int, Int) -> Maybe PlaceNote
+findClickedPlaceNote placeNotes (mouseX, mouseY) =
+    -- Reverse to check from visual top to bottom (last drawn to first drawn)
+    placeNotes
+        |> List.reverse
+        |> List.filter (\placeNote ->
+            mouseX >= placeNote.x && mouseX <= placeNote.x + placeNote.width &&
+            mouseY >= placeNote.y && mouseY <= placeNote.y + placeNote.height)
+        |> List.head
 
 -- Update position of a placeNote based on the current mouse position
 -- and the dragging state
@@ -224,11 +237,6 @@ updatePlaceNotePosition (mouseX, mouseY) draggedPlaceNoteId (offsetX, offsetY) p
         { placeNote | x = mouseX - offsetX, y = mouseY - offsetY }
     else
         placeNote
-
--- Update the dragging state based on the clicked placeNote
-initiateDraggingState : (Int, Int) -> PlaceNote -> DraggingState
-initiateDraggingState (mouseX, mouseY) placeNote =
-    DraggingPlaceNote { draggedPlaceNoteId = placeNote.id, offsetX = mouseX - placeNote.x, offsetY = mouseY - placeNote.y }
 
 -- VIEW
 view : Model -> Html Msg
