@@ -270,21 +270,34 @@ view model =
     div [ Html.Attributes.style "width" "100%"
         , Html.Attributes.style "height" "100vh"
         , Html.Attributes.style "background-color" "black"
+        , Html.Attributes.style "touch-action" "none"  -- Prevent default touch behaviors
         , Html.Events.on "mouseup" (Json.Decode.succeed MouseUp)
         , Html.Events.on "mousemove" mouseMoveDecoder
         , Html.Events.on "mousedown" mousePositionDecoder
+        , Html.Events.on "touchend" (Json.Decode.succeed MouseUp)
+        , Html.Events.on "touchmove" touchMoveDecoder
+        , Html.Events.on "touchstart" touchStartDecoder
         , preventDragStart
         ]
         [ input [ onMouseDown PreventDrag
+                , on "touchstart" (Json.Decode.succeed PreventDrag)
                 , type_ "text"
                 , value model.inputText
                 , onInput UpdatePlaceNoteText
                 ] []
-        , button [ onMouseDown PreventDrag, onClick (AddPlaceNote (100 - model.cameraX, 60 - model.cameraY)) ] [ text "Add PlaceNote" ] -- Button to add a new PlaceNote
-        , button [ onMouseDown PreventDrag, onClick ToggleMode ] [ text (if model.mode == MoveMode then "Switch to Deletion Mode" else "Switch to Move Mode") ]
-        , button [ onMouseDown PreventDrag, onClick CopyTextFromSelectedPlaceNote ] [ text "Copy Text from PlaceNote" ] -- Button to copy text from the selected PlaceNote
+        , button [ onMouseDown PreventDrag
+                 , on "touchstart" (Json.Decode.succeed PreventDrag)
+                 , onClick (AddPlaceNote (100 - model.cameraX, 60 - model.cameraY)) ] [ text "Add PlaceNote" ] -- Button to add a new PlaceNote
+        , button [ onMouseDown PreventDrag
+                 , on "touchstart" (Json.Decode.succeed PreventDrag)
+                 , onClick ToggleMode ] [ text (if model.mode == MoveMode then "Switch to Deletion Mode" else "Switch to Move Mode") ]
+        , button [ onMouseDown PreventDrag
+                 , on "touchstart" (Json.Decode.succeed PreventDrag)
+                 , onClick CopyTextFromSelectedPlaceNote ] [ text "Copy Text from PlaceNote" ] -- Button to copy text from the selected PlaceNote
         , div [] (List.map (\placeNote -> placeNoteView model placeNote) model.placeNotes)  -- Render in order (newest at end = on top)
-        , textarea [ onInput UpdateModelFromJson, value model.jsonTextArea ] []
+        , textarea [ on "touchstart" (Json.Decode.succeed PreventDrag)
+                   , onInput UpdateModelFromJson
+                   , value model.jsonTextArea ] []
         ]
 
 placeNoteView : Model -> PlaceNote -> Html Msg
@@ -327,6 +340,23 @@ mouseMoveDecoder =
 mousePositionDecoder : Json.Decode.Decoder Msg
 mousePositionDecoder =
     Json.Decode.map2 (\x y -> MouseDown (x, y))
+        (Json.Decode.field "clientX" Json.Decode.int)
+        (Json.Decode.field "clientY" Json.Decode.int)
+
+-- Touch event decoders for mobile support
+touchMoveDecoder : Json.Decode.Decoder Msg
+touchMoveDecoder =
+    Json.Decode.at ["touches", "0"] touchCoordinatesDecoder
+        |> Json.Decode.map (\(x, y) -> MouseMove (x, y))
+
+touchStartDecoder : Json.Decode.Decoder Msg
+touchStartDecoder =
+    Json.Decode.at ["touches", "0"] touchCoordinatesDecoder
+        |> Json.Decode.map (\(x, y) -> MouseDown (x, y))
+
+touchCoordinatesDecoder : Json.Decode.Decoder (Int, Int)
+touchCoordinatesDecoder =
+    Json.Decode.map2 (\x y -> (x, y))
         (Json.Decode.field "clientX" Json.Decode.int)
         (Json.Decode.field "clientY" Json.Decode.int)
 
