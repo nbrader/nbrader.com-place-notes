@@ -1,12 +1,14 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, button, div, text, textarea, input)
-import Html.Attributes exposing (style, value, type_)
-import Html.Events exposing (onClick, onMouseDown, on, preventDefaultOn, onInput, onBlur, onFocus)
+import Html exposing (Html, button, div, input, text, textarea)
+import Html.Attributes exposing (style, type_, value)
+import Html.Events exposing (on, onClick, onInput, preventDefaultOn)
 import Json.Decode
 import Json.Encode
-import Tuple exposing (pair)
+import List
+import Maybe
+import String
 
 -- MAIN
 main =
@@ -21,9 +23,9 @@ type alias Model =
     , cameraY : Int -- Camera Y offset (positive = scrolled down)
     , mode : Mode -- Current interaction mode (Move or Deletion)
     , inputText : String -- Current text in input field (synced with selected note if any)
-    , allowDrag : Bool -- False when interacting with UI elements to prevent accidental dragging
     , selectedPlaceNoteId : Maybe Int -- ID of currently selected note (shown with red border)
     , jsonTextArea : String -- Raw textarea content for JSON import/export (allows editing)
+    , pendingNewPlaceNote : Maybe String -- Text awaiting placement after pressing "Add"
     }
 
 type Mode
@@ -48,7 +50,7 @@ type alias PlaceNote =
     , x : Int      -- X position in world space (not screen space)
     , y : Int      -- Y position in world space (not screen space)
     , width : Int  -- Note width in pixels (auto-calculated from text)
-    , height : Int -- Note height in pixels (currently fixed at 50)
+    , height : Int -- Note height in pixels (auto-calculated from text)
     , text : String -- Text content displayed on the note
     }
 
@@ -63,32 +65,28 @@ init =
             , cameraY = 0
             , mode = MoveMode
             , inputText = "Write a note here." -- Default text for a new PlaceNote
-            , allowDrag = True
             , selectedPlaceNoteId = Nothing
             , jsonTextArea = "" -- Placeholder, will be set below
+            , pendingNewPlaceNote = Nothing
             }
     in
     { initialModel | jsonTextArea = serializeModel initialModel }
 
 -- UPDATE
 type Msg
-    = AddPlaceNote ( Int, Int ) -- Add a new PlaceNote
+    = PrepareNewPlaceNote -- Start the process for placing a new PlaceNote
     | UpdatePlaceNoteText String -- Update text of the selected PlaceNote
     | MouseDown ( Int, Int )
     | MouseMove (Int, Int)
     | MouseUp
     | ToggleMode
     | NoOp
-    | PreventDrag
     | CopyTextFromSelectedPlaceNote -- Copy text from the selected PlaceNote
     | UpdateModelFromJson String
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        PreventDrag ->
-            syncJsonTextArea { model | allowDrag = False }
-
         ToggleMode ->
             syncJsonTextArea <|
                 case model.mode of
@@ -96,6 +94,9 @@ update msg model =
                         { model | mode = DeletionMode }
                     DeletionMode ->
                         { model | mode = MoveMode }
+
+        PrepareNewPlaceNote ->
+            syncJsonTextArea { model | pendingNewPlaceNote = Just model.inputText }
 
         UpdatePlaceNoteText newText ->
             let
@@ -108,25 +109,6 @@ update msg model =
             in
             syncJsonTextArea { model | inputText = newText, placeNotes = updatedPlaceNotes }
 
-        AddPlaceNote (x, y) ->
-            let
-                textWidth = calculateTextWidth model.inputText
-                newPlaceNoteId = model.nextPlaceNoteId
-                newPlaceNote =
-                    { id = newPlaceNoteId
-                    , x = x - textWidth -- Adjust based on new width calculation
-                    , y = y - 25
-                    , width = textWidth
-                    , height = 50 -- Keep height static or adjust similarly
-                    , text = model.inputText
-                    }
-            in
-            syncJsonTextArea
-                { model | placeNotes = model.placeNotes ++ [ newPlaceNote ]  -- Append (O(n) but renders are O(1))
-                        , nextPlaceNoteId = newPlaceNoteId + 1
-                        , selectedPlaceNoteId = Just newPlaceNoteId } -- Set as selected
-        
-        
         MouseMove (mouseX, mouseY) ->
             -- O(1) operation: just update dragging state, don't touch the list
             -- Position calculated on-the-fly in view for massive performance gain
@@ -160,37 +142,67 @@ update msg model =
                         _ ->
                             model.placeNotes
             in
-            syncJsonTextArea { model | placeNotes = updatedPlaceNotes, dragging = Nothing, allowDrag = True }
-        
+            syncJsonTextArea { model | placeNotes = updatedPlaceNotes, dragging = Nothing }
+
         MouseDown (mouseX, mouseY) ->
             syncJsonTextArea <|
-                if model.allowDrag then
-                    case model.mode of
-                        DeletionMode ->
-                            let
-                                clickedPlaceNote = findClickedPlaceNote model.placeNotes (mouseX - model.cameraX, mouseY - model.cameraY)
-                                updatedPlaceNotes = case clickedPlaceNote of
-                                    Just placeNoteToBeRemoved -> List.filter (\placeNote -> placeNote.id /= placeNoteToBeRemoved.id) model.placeNotes
-                                    Nothing -> model.placeNotes
-                            in
-                            { model | placeNotes = updatedPlaceNotes }
-                        MoveMode ->
-                            case findClickedPlaceNote model.placeNotes (mouseX - model.cameraX, mouseY - model.cameraY) of
-                                Just placeNote ->
-                                    { model | dragging = Just (DraggingPlaceNote
-                                        { draggedPlaceNoteId = placeNote.id
-                                        , offsetX = mouseX - placeNote.x
-                                        , offsetY = mouseY - placeNote.y
-                                        , currentMouseX = mouseX
-                                        , currentMouseY = mouseY
-                                        })
-                                    , selectedPlaceNoteId = Just placeNote.id
-                                    , inputText = placeNote.text  -- Populate input for editing
-                                    }
-                                Nothing ->
-                                    { model | dragging = Just (DraggingCamera { initialX = mouseX, initialY = mouseY }) }
-                else
-                    { model | dragging = Nothing }
+                case model.pendingNewPlaceNote of
+                    Just textToPlace ->
+                        let
+                            ( noteWidth, noteHeight ) = calculateTextDimensions textToPlace
+                            newPlaceNoteId = model.nextPlaceNoteId
+                            newPlaceNote =
+                                { id = newPlaceNoteId
+                                , x = mouseX - model.cameraX - (noteWidth // 2)
+                                , y = mouseY - model.cameraY - (noteHeight // 2)
+                                , width = noteWidth
+                                , height = noteHeight
+                                , text = textToPlace
+                                }
+                        in
+                        { model
+                            | placeNotes = model.placeNotes ++ [ newPlaceNote ]
+                            , nextPlaceNoteId = newPlaceNoteId + 1
+                            , selectedPlaceNoteId = Just newPlaceNoteId
+                            , pendingNewPlaceNote = Nothing
+                            , inputText = textToPlace
+                            , dragging = Nothing
+                        }
+
+                    Nothing ->
+                        case model.mode of
+                            DeletionMode ->
+                                let
+                                    clickedPlaceNote = findClickedPlaceNote model.placeNotes (mouseX - model.cameraX, mouseY - model.cameraY)
+                                    updatedPlaceNotes =
+                                        case clickedPlaceNote of
+                                            Just placeNoteToBeRemoved ->
+                                                List.filter (\placeNote -> placeNote.id /= placeNoteToBeRemoved.id) model.placeNotes
+
+                                            Nothing ->
+                                                model.placeNotes
+                                in
+                                { model | placeNotes = updatedPlaceNotes }
+
+                            MoveMode ->
+                                case findClickedPlaceNote model.placeNotes (mouseX - model.cameraX, mouseY - model.cameraY) of
+                                    Just placeNote ->
+                                        { model
+                                            | dragging = Just
+                                                (DraggingPlaceNote
+                                                    { draggedPlaceNoteId = placeNote.id
+                                                    , offsetX = mouseX - placeNote.x
+                                                    , offsetY = mouseY - placeNote.y
+                                                    , currentMouseX = mouseX
+                                                    , currentMouseY = mouseY
+                                                    }
+                                                )
+                                            , selectedPlaceNoteId = Just placeNote.id
+                                            , inputText = placeNote.text  -- Populate input for editing
+                                        }
+
+                                    Nothing ->
+                                        { model | dragging = Just (DraggingCamera { initialX = mouseX, initialY = mouseY }) }
 
         CopyTextFromSelectedPlaceNote ->
             syncJsonTextArea <|
@@ -222,16 +234,49 @@ update msg model =
         NoOp ->
             model -- Do nothing
 
-calculateTextWidth : String -> Int
-calculateTextWidth text =
-    -- Approximate width calculation with minimum width to ensure notes are always visible/clickable
-    max 40 (8 * String.length text)
+calculateTextHeight : String -> Int
+calculateTextHeight text =
+    let
+        lines =
+            case String.lines text of
+                [] ->
+                    [ "" ]
+                ls ->
+                    ls
+
+        lineCount = List.length lines
+    in
+    max 50 (20 * lineCount + 10)
+
+calculateTextDimensions : String -> ( Int, Int )
+calculateTextDimensions text =
+    let
+        lines =
+            case String.lines text of
+                [] ->
+                    [ "" ]
+                ls ->
+                    ls
+
+        longestLineLength =
+            lines
+                |> List.map String.length
+                |> List.maximum
+                |> Maybe.withDefault 0
+
+        width = max 80 (8 * longestLineLength + 16)
+        height = calculateTextHeight text
+    in
+    ( width, height )
 
 -- Update a placeNote's text and recalculate width if it matches the given ID
 updatePlaceNoteTextById : Int -> String -> PlaceNote -> PlaceNote
 updatePlaceNoteTextById targetId newText placeNote =
     if placeNote.id == targetId then
-        { placeNote | text = newText, width = calculateTextWidth newText }
+        let
+            ( newWidth, newHeight ) = calculateTextDimensions newText
+        in
+        { placeNote | text = newText, width = newWidth, height = newHeight }
     else
         placeNote
 
@@ -267,38 +312,142 @@ findClickedPlaceNote placeNotes (mouseX, mouseY) =
 -- VIEW
 view : Model -> Html Msg
 view model =
-    div [ Html.Attributes.style "width" "100%"
-        , Html.Attributes.style "height" "100vh"
-        , Html.Attributes.style "background-color" "black"
-        , Html.Attributes.style "touch-action" "none"  -- Prevent default touch behaviors
-        , Html.Events.on "mouseup" (Json.Decode.succeed MouseUp)
-        , Html.Events.on "mousemove" mouseMoveDecoder
-        , Html.Events.on "mousedown" mousePositionDecoder
-        , Html.Events.on "touchend" (Json.Decode.succeed MouseUp)
-        , Html.Events.on "touchmove" touchMoveDecoder
-        , Html.Events.on "touchstart" touchStartDecoder
-        , preventDragStart
+    let
+        ( statusMessage, statusColor ) =
+            case ( model.pendingNewPlaceNote, model.mode ) of
+                ( Just _, _ ) ->
+                    ( "Tap anywhere on the workspace to place your new note.", "#facc15" )
+
+                ( Nothing, DeletionMode ) ->
+                    ( "Deletion mode: tap a note to remove it.", "#f87171" )
+
+                ( Nothing, MoveMode ) ->
+                    ( "Move mode: drag notes or the background to pan.", "#38bdf8" )
+
+        workspaceCursor =
+            case ( model.mode, model.pendingNewPlaceNote ) of
+                ( DeletionMode, _ ) ->
+                    "not-allowed"
+
+                ( _, Just _ ) ->
+                    "copy"
+
+                _ ->
+                    "grab"
+
+        modeLabel =
+            case model.mode of
+                MoveMode ->
+                    "Move"
+
+                DeletionMode ->
+                    "Delete"
+
+        workspaceAttributes =
+            [ style "flex" "1"
+            , style "position" "relative"
+            , style "overflow" "hidden"
+            , style "background-color" "#0b1220"
+            , style "border-top" "1px solid #1f2937"
+            , style "border-bottom" "1px solid #1f2937"
+            , style "touch-action" "none"
+            , style "cursor" workspaceCursor
+            , Html.Events.on "mouseup" (Json.Decode.succeed MouseUp)
+            , Html.Events.on "mousemove" mouseMoveDecoder
+            , Html.Events.on "mousedown" mousePositionDecoder
+            , Html.Events.on "touchend" (Json.Decode.succeed MouseUp)
+            , Html.Events.on "touchmove" touchMoveDecoder
+            , Html.Events.on "touchstart" touchStartDecoder
+            , preventDragStart
+            ]
+    in
+    div
+        [ style "width" "100%"
+        , style "height" "100vh"
+        , style "display" "flex"
+        , style "flex-direction" "column"
+        , style "background-color" "#020617"
+        , style "color" "#e2e8f0"
+        , style "font-family" "Inter, system-ui, sans-serif"
         ]
-        [ input [ onMouseDown PreventDrag
-                , on "touchstart" (Json.Decode.succeed PreventDrag)
-                , type_ "text"
-                , value model.inputText
-                , onInput UpdatePlaceNoteText
-                ] []
-        , button [ onMouseDown PreventDrag
-                 , on "touchstart" (Json.Decode.succeed PreventDrag)
-                 , onClick (AddPlaceNote (100 - model.cameraX, 60 - model.cameraY)) ] [ text "Add PlaceNote" ] -- Button to add a new PlaceNote
-        , button [ onMouseDown PreventDrag
-                 , on "touchstart" (Json.Decode.succeed PreventDrag)
-                 , onClick ToggleMode ] [ text (if model.mode == MoveMode then "Switch to Deletion Mode" else "Switch to Move Mode") ]
-        , button [ onMouseDown PreventDrag
-                 , on "touchstart" (Json.Decode.succeed PreventDrag)
-                 , onClick CopyTextFromSelectedPlaceNote ] [ text "Copy Text from PlaceNote" ] -- Button to copy text from the selected PlaceNote
-        , div [] (List.map (\placeNote -> placeNoteView model placeNote) model.placeNotes)  -- Render in order (newest at end = on top)
-        , textarea [ on "touchstart" (Json.Decode.succeed PreventDrag)
-                   , onInput UpdateModelFromJson
-                   , value model.jsonTextArea ] []
-        ]
+        ([ div
+                [ style "padding" "12px"
+                , style "display" "flex"
+                , style "gap" "8px"
+                , style "flex-wrap" "wrap"
+                , style "align-items" "center"
+                ]
+                [ input
+                    [ type_ "text"
+                    , value model.inputText
+                    , onInput UpdatePlaceNoteText
+                    , style "padding" "8px 12px"
+                    , style "min-width" "220px"
+                    , style "background-color" "#0f172a"
+                    , style "color" "#e2e8f0"
+                    , style "border" "1px solid #1f2937"
+                    , style "border-radius" "6px"
+                    ]
+                    []
+                , button
+                    [ onClick PrepareNewPlaceNote
+                    , style "padding" "8px 16px"
+                    , style "background-color" "#2563eb"
+                    , style "color" "white"
+                    , style "border" "none"
+                    , style "border-radius" "6px"
+                    , style "font-weight" "600"
+                    ]
+                    [ text (if model.pendingNewPlaceNote == Nothing then "Add note" else "Tap to place") ]
+                , button
+                    [ onClick ToggleMode
+                    , style "padding" "8px 16px"
+                    , style "background-color" "#334155"
+                    , style "color" "#e2e8f0"
+                    , style "border" "none"
+                    , style "border-radius" "6px"
+                    ]
+                    [ text (if model.mode == MoveMode then "Switch to delete" else "Switch to move") ]
+                , button
+                    [ onClick CopyTextFromSelectedPlaceNote
+                    , style "padding" "8px 16px"
+                    , style "background-color" "#475569"
+                    , style "color" "#e2e8f0"
+                    , style "border" "none"
+                    , style "border-radius" "6px"
+                    ]
+                    [ text "Load selected text" ]
+                , div
+                    [ style "margin-left" "auto"
+                    , style "font-weight" "600"
+                    ]
+                    [ text ("Mode: " ++ modeLabel) ]
+                ]
+            , div
+                [ style "padding" "0 12px 12px 12px"
+                , style "font-size" "14px"
+                , style "color" statusColor
+                ]
+                [ text statusMessage ]
+            , div workspaceAttributes (List.map (\placeNote -> placeNoteView model placeNote) model.placeNotes)
+            ]
+            ++
+            [ textarea
+                [ onInput UpdateModelFromJson
+                , value model.jsonTextArea
+                , style "width" "100%"
+                , style "min-height" "180px"
+                , style "background-color" "#0f172a"
+                , style "color" "#f8fafc"
+                , style "border" "1px solid #1f2937"
+                , style "border-radius" "0"
+                , style "padding" "12px"
+                , style "font-family" "JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace"
+                , style "font-size" "13px"
+                , style "box-sizing" "border-box"
+                ]
+                []
+            ])
 
 placeNoteView : Model -> PlaceNote -> Html Msg
 placeNoteView model placeNote =
@@ -313,6 +462,12 @@ placeNoteView model placeNote =
                         (placeNote.x, placeNote.y)
                 _ ->
                     (placeNote.x, placeNote.y)
+
+        noteBorder =
+            if Just placeNote.id == model.selectedPlaceNoteId then
+                "2px solid #f87171"
+            else
+                "1px solid rgba(148, 163, 184, 0.25)"
     in
     div
         [ style "position" "absolute"
@@ -320,13 +475,19 @@ placeNoteView model placeNote =
         , style "top" (String.fromInt (displayY + model.cameraY) ++ "px")
         , style "width" (String.fromInt placeNote.width ++ "px")
         , style "height" (String.fromInt placeNote.height ++ "px")
-        , style "background-color" "#007bff"
-        , style "border-radius" "8px"
-        , style "color" "white"
-        , style "display" "flex"
-        , style "align-items" "center"
-        , style "justify-content" "center"
-        , style "border" (if Just placeNote.id == model.selectedPlaceNoteId then "4px solid red" else "1px solid black") -- Highlight selected placeNote
+        , style "background" "linear-gradient(135deg, #2563eb, #7c3aed)"
+        , style "border-radius" "12px"
+        , style "color" "#f8fafc"
+        , style "padding" "12px"
+        , style "box-sizing" "border-box"
+        , style "font-weight" "600"
+        , style "line-height" "1.3"
+        , style "letter-spacing" "0.01em"
+        , style "border" noteBorder
+        , style "box-shadow" "0 20px 45px rgba(15, 23, 42, 0.45)"
+        , style "user-select" "none"
+        , style "white-space" "pre-wrap"
+        , style "overflow-wrap" "anywhere"
         , Html.Attributes.attribute "data-id" (String.fromInt placeNote.id)
         ]
         [ text placeNote.text ]
@@ -377,7 +538,6 @@ serializeModel model =
                                     MoveMode -> "MoveMode"
                                     DeletionMode -> "DeletionMode" )
         , ( "inputText", Json.Encode.string model.inputText )
-        , ( "allowDrag", Json.Encode.bool model.allowDrag )
         , ( "selectedPlaceNoteId", case model.selectedPlaceNoteId of
             Just id -> Json.Encode.int id
             Nothing -> Json.Encode.null )
@@ -423,9 +583,9 @@ modelDecoder =
         (Json.Decode.field "cameraY" Json.Decode.int)
         (Json.Decode.field "mode" <| Json.Decode.map (\m -> if m == "MoveMode" then MoveMode else DeletionMode) Json.Decode.string)
         (Json.Decode.field "inputText" Json.Decode.string)
-        (Json.Decode.field "allowDrag" Json.Decode.bool)
         (Json.Decode.maybe <| Json.Decode.field "selectedPlaceNoteId" Json.Decode.int)
         (Json.Decode.succeed "") -- Default value for `jsonTextArea` (not serialized, managed separately)
+        (Json.Decode.succeed Nothing) -- Default for `pendingNewPlaceNote`
 
 placeNoteDecoder : Json.Decode.Decoder PlaceNote
 placeNoteDecoder =
@@ -485,3 +645,4 @@ map10 constructor decA decB decC decD decE decF decG decH decI decJ =
         |> Json.Decode.andThen (\valueSoFar5 ->
             Json.Decode.map5 (\f g h i j -> valueSoFar5 f g h i j) decF decG decH decI decJ
         )
+
