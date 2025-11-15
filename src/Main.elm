@@ -538,9 +538,11 @@ serializeModel model =
                                     MoveMode -> "MoveMode"
                                     DeletionMode -> "DeletionMode" )
         , ( "inputText", Json.Encode.string model.inputText )
-        , ( "selectedPlaceNoteId", case model.selectedPlaceNoteId of
-            Just id -> Json.Encode.int id
-            Nothing -> Json.Encode.null )
+        , ( "selectedPlaceNoteId"
+          , case model.selectedPlaceNoteId of
+                Just id -> Json.Encode.int id
+                Nothing -> Json.Encode.null
+          )
         ]
 
 encodePlaceNotes : List PlaceNote -> Json.Encode.Value
