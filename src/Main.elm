@@ -494,15 +494,15 @@ placeNoteView model placeNote =
 
 mouseMoveDecoder : Json.Decode.Decoder Msg
 mouseMoveDecoder =
-    Json.Decode.map2 (\offsetX offsetY -> MouseMove (offsetX, offsetY))
-        (Json.Decode.field "offsetX" Json.Decode.int)
-        (Json.Decode.field "offsetY" Json.Decode.int)
+    Json.Decode.map2 (\workspaceX workspaceY -> MouseMove (workspaceX, workspaceY))
+        (Json.Decode.field "workspaceX" Json.Decode.int)
+        (Json.Decode.field "workspaceY" Json.Decode.int)
 
 mousePositionDecoder : Json.Decode.Decoder Msg
 mousePositionDecoder =
     Json.Decode.map2 (\x y -> MouseDown (x, y))
-        (Json.Decode.field "offsetX" Json.Decode.int)
-        (Json.Decode.field "offsetY" Json.Decode.int)
+        (Json.Decode.field "workspaceX" Json.Decode.int)
+        (Json.Decode.field "workspaceY" Json.Decode.int)
 
 -- Touch event decoders for mobile support
 touchMoveDecoder : Json.Decode.Decoder Msg
@@ -515,13 +515,13 @@ touchStartDecoder =
     Json.Decode.at ["touches", "0"] touchCoordinatesDecoder
         |> Json.Decode.map (\(x, y) -> MouseDown (x, y))
 
--- Touch events don't natively have offsetX/offsetY, but we add them via JavaScript
--- in the HTML file to calculate element-relative coordinates
+-- Touch events don't natively have workspace-relative coordinates
+-- We add workspaceX/workspaceY via JavaScript in the HTML file
 touchCoordinatesDecoder : Json.Decode.Decoder (Int, Int)
 touchCoordinatesDecoder =
     Json.Decode.map2 (\x y -> (x, y))
-        (Json.Decode.field "offsetX" Json.Decode.int)
-        (Json.Decode.field "offsetY" Json.Decode.int)
+        (Json.Decode.field "workspaceX" Json.Decode.int)
+        (Json.Decode.field "workspaceY" Json.Decode.int)
 
 -- Decoder to ignore the dragstart event's default action
 preventDragStart : Html.Attribute Msg
