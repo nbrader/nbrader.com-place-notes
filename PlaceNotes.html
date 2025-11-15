@@ -13,6 +13,28 @@
         var app = Elm.Main.init({
             node: document.getElementById('elm-main')
         });
+
+        // Fix touch event coordinates to be element-relative
+        // Touch events don't have offsetX/offsetY, so we calculate them
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add touch coordinate calculation after a short delay to ensure Elm has rendered
+            setTimeout(function() {
+                var workspace = document.querySelector('[style*="flex: 1"]');
+                if (workspace) {
+                    ['touchstart', 'touchmove'].forEach(function(eventType) {
+                        workspace.addEventListener(eventType, function(e) {
+                            if (e.touches && e.touches[0]) {
+                                var rect = workspace.getBoundingClientRect();
+                                var touch = e.touches[0];
+                                // Add calculated offset coordinates to the touch object
+                                touch.offsetX = touch.clientX - rect.left;
+                                touch.offsetY = touch.clientY - rect.top;
+                            }
+                        }, { passive: false, capture: true });
+                    });
+                }
+            }, 100);
+        });
     </script>
 </body>
 </html>
