@@ -16,35 +16,62 @@
 
         // Fix coordinate calculations for both mouse and touch events
         // We need coordinates relative to the workspace, not the clicked element
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                var workspace = document.querySelector('[style*="flex: 1"]');
-                if (workspace) {
-                    // Intercept mouse events and add workspace-relative coordinates
-                    ['mousedown', 'mousemove'].forEach(function(eventType) {
-                        workspace.addEventListener(eventType, function(e) {
-                            var rect = workspace.getBoundingClientRect();
-                            // Add custom properties with workspace-relative coordinates
-                            e.workspaceX = e.clientX - rect.left;
-                            e.workspaceY = e.clientY - rect.top;
-                        }, { capture: true });
-                    });
+        function setupWorkspaceListeners() {
+            var workspace = document.getElementById('workspace');
+            if (!workspace) {
+                // Retry if workspace not found yet
+                setTimeout(setupWorkspaceListeners, 50);
+                return;
+            }
 
-                    // Intercept touch events and add workspace-relative coordinates
-                    ['touchstart', 'touchmove'].forEach(function(eventType) {
-                        workspace.addEventListener(eventType, function(e) {
-                            if (e.touches && e.touches[0]) {
-                                var rect = workspace.getBoundingClientRect();
-                                var touch = e.touches[0];
-                                // Add custom properties with workspace-relative coordinates
-                                touch.workspaceX = touch.clientX - rect.left;
-                                touch.workspaceY = touch.clientY - rect.top;
-                            }
-                        }, { passive: false, capture: true });
+            console.log('Workspace found, attaching event listeners');
+
+            // Intercept mouse events and add workspace-relative coordinates
+            ['mousedown', 'mousemove'].forEach(function(eventType) {
+                workspace.addEventListener(eventType, function(e) {
+                    var rect = workspace.getBoundingClientRect();
+                    // Define properties on the event object
+                    Object.defineProperty(e, 'workspaceX', {
+                        value: Math.round(e.clientX - rect.left),
+                        writable: false,
+                        enumerable: true
                     });
-                }
-            }, 100);
-        });
+                    Object.defineProperty(e, 'workspaceY', {
+                        value: Math.round(e.clientY - rect.top),
+                        writable: false,
+                        enumerable: true
+                    });
+                }, { capture: true });
+            });
+
+            // Intercept touch events and add workspace-relative coordinates
+            ['touchstart', 'touchmove'].forEach(function(eventType) {
+                workspace.addEventListener(eventType, function(e) {
+                    if (e.touches && e.touches[0]) {
+                        var rect = workspace.getBoundingClientRect();
+                        var touch = e.touches[0];
+                        // Define properties on the touch object
+                        Object.defineProperty(touch, 'workspaceX', {
+                            value: Math.round(touch.clientX - rect.left),
+                            writable: false,
+                            enumerable: true
+                        });
+                        Object.defineProperty(touch, 'workspaceY', {
+                            value: Math.round(touch.clientY - rect.top),
+                            writable: false,
+                            enumerable: true
+                        });
+                    }
+                }, { passive: false, capture: true });
+            });
+        }
+
+        // Start trying to attach listeners after DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupWorkspaceListeners);
+        } else {
+            setupWorkspaceListeners();
+        }
     </script>
 </body>
 </html>

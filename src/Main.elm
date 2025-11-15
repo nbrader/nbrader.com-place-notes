@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Browser
 import Html exposing (Html, button, div, input, text, textarea)
-import Html.Attributes exposing (style, type_, value)
+import Html.Attributes exposing (id, style, type_, value)
 import Html.Events exposing (on, onClick, onInput, preventDefaultOn)
 import Json.Decode
 import Json.Encode
@@ -344,7 +344,8 @@ view model =
                     "Delete"
 
         workspaceAttributes =
-            [ style "flex" "1"
+            [ id "workspace"
+            , style "flex" "1"
             , style "position" "relative"
             , style "overflow" "hidden"
             , style "background-color" "#0b1220"
