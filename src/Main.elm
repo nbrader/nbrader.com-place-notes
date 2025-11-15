@@ -134,7 +134,7 @@ update msg model =
                             List.map
                                 (\placeNote ->
                                     if placeNote.id == draggedPlaceNoteId then
-                                        { placeNote | x = currentMouseX - offsetX, y = currentMouseY - offsetY }
+                                        { placeNote | x = (currentMouseX - model.cameraX) - offsetX, y = (currentMouseY - model.cameraY) - offsetY }
                                     else
                                         placeNote
                                 )
@@ -191,8 +191,8 @@ update msg model =
                                             | dragging = Just
                                                 (DraggingPlaceNote
                                                     { draggedPlaceNoteId = placeNote.id
-                                                    , offsetX = mouseX - placeNote.x
-                                                    , offsetY = mouseY - placeNote.y
+                                                    , offsetX = (mouseX - model.cameraX) - placeNote.x
+                                                    , offsetY = (mouseY - model.cameraY) - placeNote.y
                                                     , currentMouseX = mouseX
                                                     , currentMouseY = mouseY
                                                     }
@@ -457,7 +457,7 @@ placeNoteView model placeNote =
             case model.dragging of
                 Just (DraggingPlaceNote { draggedPlaceNoteId, offsetX, offsetY, currentMouseX, currentMouseY }) ->
                     if placeNote.id == draggedPlaceNoteId then
-                        (currentMouseX - offsetX, currentMouseY - offsetY)
+                        ((currentMouseX - model.cameraX) - offsetX, (currentMouseY - model.cameraY) - offsetY)
                     else
                         (placeNote.x, placeNote.y)
                 _ ->
