@@ -2719,7 +2719,7 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		w: func(record.w),
+		x: func(record.x),
 		af: record.af,
 		ac: record.ac
 	}
@@ -2989,7 +2989,7 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.w;
+		var message = !tag ? value : tag < 3 ? value.a : value.x;
 		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.af;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
@@ -4249,10 +4249,10 @@ function _Browser_getViewport()
 	return {
 		az: _Browser_getScene(),
 		aC: {
-			t: _Browser_window.pageXOffset,
-			u: _Browser_window.pageYOffset,
-			L: _Browser_doc.documentElement.clientWidth,
-			N: _Browser_doc.documentElement.clientHeight
+			u: _Browser_window.pageXOffset,
+			v: _Browser_window.pageYOffset,
+			M: _Browser_doc.documentElement.clientWidth,
+			J: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4262,8 +4262,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		L: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		N: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		M: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		J: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4287,14 +4287,14 @@ function _Browser_getViewportOf(id)
 	{
 		return {
 			az: {
-				L: node.scrollWidth,
-				N: node.scrollHeight
+				M: node.scrollWidth,
+				J: node.scrollHeight
 			},
 			aC: {
-				t: node.scrollLeft,
-				u: node.scrollTop,
-				L: node.clientWidth,
-				N: node.clientHeight
+				u: node.scrollLeft,
+				v: node.scrollTop,
+				M: node.clientWidth,
+				J: node.clientHeight
 			}
 		};
 	});
@@ -4326,16 +4326,16 @@ function _Browser_getElement(id)
 		return {
 			az: _Browser_getScene(),
 			aC: {
-				t: x,
-				u: y,
-				L: _Browser_doc.documentElement.clientWidth,
-				N: _Browser_doc.documentElement.clientHeight
+				u: x,
+				v: y,
+				M: _Browser_doc.documentElement.clientWidth,
+				J: _Browser_doc.documentElement.clientHeight
 			},
 			aI: {
-				t: x + rect.left,
-				u: y + rect.top,
-				L: rect.width,
-				N: rect.height
+				u: x + rect.left,
+				v: y + rect.top,
+				M: rect.width,
+				J: rect.height
 			}
 		};
 	});
@@ -4452,7 +4452,6 @@ var $elm$core$Basics$GT = 2;
 var $elm$core$Basics$LT = 0;
 var $author$project$Main$MoveMode = 0;
 var $elm$core$Maybe$Nothing = {$: 1};
-var $elm$core$Basics$True = 0;
 var $elm$core$Basics$apL = F2(
 	function (f, x) {
 		return f(x);
@@ -4486,7 +4485,6 @@ var $elm$core$Maybe$Just = function (a) {
 var $elm$core$String$all = _String_all;
 var $elm$core$Basics$and = _Basics_and;
 var $elm$core$Basics$append = _Utils_append;
-var $elm$json$Json$Encode$encode = _Json_encode;
 var $elm$core$String$fromInt = _String_fromNumber;
 var $elm$core$String$join = F2(
 	function (sep, chunks) {
@@ -4839,6 +4837,7 @@ var $elm$core$Array$initialize = F2(
 			return A5($elm$core$Array$initializeHelp, fn, initialFromIndex, len, _List_Nil, tail);
 		}
 	});
+var $elm$core$Basics$True = 0;
 var $elm$core$Result$isOk = function (result) {
 	if (!result.$) {
 		return true;
@@ -4846,7 +4845,7 @@ var $elm$core$Result$isOk = function (result) {
 		return false;
 	}
 };
-var $elm$json$Json$Encode$bool = _Json_wrap;
+var $elm$json$Json$Encode$encode = _Json_encode;
 var $elm$json$Json$Encode$int = _Json_wrap;
 var $elm$json$Json$Encode$list = F2(
 	function (func, entries) {
@@ -4881,19 +4880,19 @@ var $author$project$Main$encodePlaceNotes = function (notes) {
 					$elm$json$Json$Encode$int(note.g)),
 					_Utils_Tuple2(
 					'x',
-					$elm$json$Json$Encode$int(note.t)),
-					_Utils_Tuple2(
-					'y',
 					$elm$json$Json$Encode$int(note.u)),
 					_Utils_Tuple2(
+					'y',
+					$elm$json$Json$Encode$int(note.v)),
+					_Utils_Tuple2(
 					'width',
-					$elm$json$Json$Encode$int(note.L)),
+					$elm$json$Json$Encode$int(note.M)),
 					_Utils_Tuple2(
 					'height',
-					$elm$json$Json$Encode$int(note.N)),
+					$elm$json$Json$Encode$int(note.J)),
 					_Utils_Tuple2(
 					'text',
-					$elm$json$Json$Encode$string(note.J))
+					$elm$json$Json$Encode$string(note.G))
 				]));
 	};
 	return A2($elm$json$Json$Encode$list, encodeNote, notes);
@@ -4914,15 +4913,15 @@ var $author$project$Main$serializeModel = function (model) {
 					$elm$json$Json$Encode$int(model.P)),
 					_Utils_Tuple2(
 					'cameraX',
-					$elm$json$Json$Encode$int(model.o)),
+					$elm$json$Json$Encode$int(model.i)),
 					_Utils_Tuple2(
 					'cameraY',
-					$elm$json$Json$Encode$int(model.p)),
+					$elm$json$Json$Encode$int(model.j)),
 					_Utils_Tuple2(
 					'mode',
 					$elm$json$Json$Encode$string(
 						function () {
-							var _v0 = model.x;
+							var _v0 = model.o;
 							if (!_v0) {
 								return 'MoveMode';
 							} else {
@@ -4931,14 +4930,11 @@ var $author$project$Main$serializeModel = function (model) {
 						}())),
 					_Utils_Tuple2(
 					'inputText',
-					$elm$json$Json$Encode$string(model.q)),
-					_Utils_Tuple2(
-					'allowDrag',
-					$elm$json$Json$Encode$bool(model.G)),
+					$elm$json$Json$Encode$string(model.p)),
 					_Utils_Tuple2(
 					'selectedPlaceNoteId',
 					function () {
-						var _v1 = model.z;
+						var _v1 = model.A;
 						if (!_v1.$) {
 							var id = _v1.a;
 							return $elm$json$Json$Encode$int(id);
@@ -4949,11 +4945,11 @@ var $author$project$Main$serializeModel = function (model) {
 				])));
 };
 var $author$project$Main$init = function () {
-	var initialModel = {G: true, o: 0, p: 0, k: $elm$core$Maybe$Nothing, q: 'Write a note here.', C: '', x: 0, P: 0, c: _List_Nil, z: $elm$core$Maybe$Nothing};
+	var initialModel = {i: 0, j: 0, m: $elm$core$Maybe$Nothing, p: 'Write a note here.', D: '', o: 0, P: 0, y: $elm$core$Maybe$Nothing, c: _List_Nil, A: $elm$core$Maybe$Nothing};
 	return _Utils_update(
 		initialModel,
 		{
-			C: $author$project$Main$serializeModel(initialModel)
+			D: $author$project$Main$serializeModel(initialModel)
 		});
 }();
 var $elm$json$Json$Decode$map = _Json_map1;
@@ -5292,11 +5288,59 @@ var $author$project$Main$DraggingCamera = function (a) {
 var $author$project$Main$DraggingPlaceNote = function (a) {
 	return {$: 0, a: a};
 };
-var $author$project$Main$calculateTextWidth = function (text) {
-	return A2(
-		$elm$core$Basics$max,
-		40,
-		8 * $elm$core$String$length(text));
+var $elm$core$String$lines = _String_lines;
+var $author$project$Main$calculateTextHeight = function (text) {
+	var lines = function () {
+		var _v0 = $elm$core$String$lines(text);
+		if (!_v0.b) {
+			return _List_fromArray(
+				['']);
+		} else {
+			var ls = _v0;
+			return ls;
+		}
+	}();
+	var lineCount = $elm$core$List$length(lines);
+	return A2($elm$core$Basics$max, 50, (20 * lineCount) + 10);
+};
+var $elm$core$List$maximum = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(
+			A3($elm$core$List$foldl, $elm$core$Basics$max, x, xs));
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (!maybe.$) {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $author$project$Main$calculateTextDimensions = function (text) {
+	var lines = function () {
+		var _v0 = $elm$core$String$lines(text);
+		if (!_v0.b) {
+			return _List_fromArray(
+				['']);
+		} else {
+			var ls = _v0;
+			return ls;
+		}
+	}();
+	var longestLineLength = A2(
+		$elm$core$Maybe$withDefault,
+		0,
+		$elm$core$List$maximum(
+			A2($elm$core$List$map, $elm$core$String$length, lines)));
+	var width = A2($elm$core$Basics$max, 80, (8 * longestLineLength) + 16);
+	var height = $author$project$Main$calculateTextHeight(text);
+	return _Utils_Tuple2(width, height);
 };
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$core$List$filter = F2(
@@ -5328,7 +5372,7 @@ var $author$project$Main$findClickedPlaceNote = F2(
 			A2(
 				$elm$core$List$filter,
 				function (placeNote) {
-					return (_Utils_cmp(mouseX, placeNote.t) > -1) && ((_Utils_cmp(mouseX, placeNote.t + placeNote.L) < 1) && ((_Utils_cmp(mouseY, placeNote.u) > -1) && (_Utils_cmp(mouseY, placeNote.u + placeNote.N) < 1)));
+					return (_Utils_cmp(mouseX, placeNote.u) > -1) && ((_Utils_cmp(mouseX, placeNote.u + placeNote.M) < 1) && ((_Utils_cmp(mouseY, placeNote.v) > -1) && (_Utils_cmp(mouseY, placeNote.v + placeNote.J) < 1)));
 				},
 				$elm$core$List$reverse(placeNotes)));
 	});
@@ -5370,10 +5414,10 @@ var $author$project$Main$Model = function (placeNotes) {
 				return function (cameraY) {
 					return function (mode) {
 						return function (inputText) {
-							return function (allowDrag) {
-								return function (selectedPlaceNoteId) {
-									return function (jsonTextArea) {
-										return {G: allowDrag, o: cameraX, p: cameraY, k: dragging, q: inputText, C: jsonTextArea, x: mode, P: nextPlaceNoteId, c: placeNotes, z: selectedPlaceNoteId};
+							return function (selectedPlaceNoteId) {
+								return function (jsonTextArea) {
+									return function (pendingNewPlaceNote) {
+										return {i: cameraX, j: cameraY, m: dragging, p: inputText, D: jsonTextArea, o: mode, P: nextPlaceNoteId, y: pendingNewPlaceNote, c: placeNotes, A: selectedPlaceNoteId};
 									};
 								};
 							};
@@ -5384,7 +5428,6 @@ var $author$project$Main$Model = function (placeNotes) {
 		};
 	};
 };
-var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $elm$json$Json$Decode$list = _Json_decodeList;
@@ -5449,7 +5492,7 @@ var $elm$json$Json$Decode$maybe = function (decoder) {
 };
 var $author$project$Main$PlaceNote = F6(
 	function (id, x, y, width, height, text) {
-		return {N: height, g: id, J: text, L: width, t: x, u: y};
+		return {J: height, g: id, G: text, M: width, u: x, v: y};
 	});
 var $author$project$Main$map6 = F7(
 	function (constructor, decA, decB, decC, decD, decE, decF) {
@@ -5494,62 +5537,59 @@ var $author$project$Main$modelDecoder = $author$project$Main$map10($author$proje
 			},
 			$elm$json$Json$Decode$string)))(
 	A2($elm$json$Json$Decode$field, 'inputText', $elm$json$Json$Decode$string))(
-	A2($elm$json$Json$Decode$field, 'allowDrag', $elm$json$Json$Decode$bool))(
 	$elm$json$Json$Decode$maybe(
 		A2($elm$json$Json$Decode$field, 'selectedPlaceNoteId', $elm$json$Json$Decode$int)))(
-	$elm$json$Json$Decode$succeed(''));
+	$elm$json$Json$Decode$succeed(''))(
+	$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing));
 var $elm$core$Basics$neq = _Utils_notEqual;
 var $author$project$Main$syncJsonTextArea = function (model) {
 	return _Utils_update(
 		model,
 		{
-			C: $author$project$Main$serializeModel(model)
+			D: $author$project$Main$serializeModel(model)
 		});
 };
 var $author$project$Main$updatePlaceNoteTextById = F3(
 	function (targetId, newText, placeNote) {
-		return _Utils_eq(placeNote.g, targetId) ? _Utils_update(
-			placeNote,
-			{
-				J: newText,
-				L: $author$project$Main$calculateTextWidth(newText)
-			}) : placeNote;
-	});
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (!maybe.$) {
-			var value = maybe.a;
-			return value;
+		if (_Utils_eq(placeNote.g, targetId)) {
+			var _v0 = $author$project$Main$calculateTextDimensions(newText);
+			var newWidth = _v0.a;
+			var newHeight = _v0.b;
+			return _Utils_update(
+				placeNote,
+				{J: newHeight, G: newText, M: newWidth});
 		} else {
-			return _default;
+			return placeNote;
 		}
 	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
-			case 7:
-				return $author$project$Main$syncJsonTextArea(
-					_Utils_update(
-						model,
-						{G: false}));
 			case 5:
 				return $author$project$Main$syncJsonTextArea(
 					function () {
-						var _v1 = model.x;
+						var _v1 = model.o;
 						if (!_v1) {
 							return _Utils_update(
 								model,
-								{x: 1});
+								{o: 1});
 						} else {
 							return _Utils_update(
 								model,
-								{x: 0});
+								{o: 0});
 						}
 					}());
+			case 0:
+				return $author$project$Main$syncJsonTextArea(
+					_Utils_update(
+						model,
+						{
+							y: $elm$core$Maybe$Just(model.p)
+						}));
 			case 1:
 				var newText = msg.a;
 				var updatedPlaceNotes = function () {
-					var _v2 = model.z;
+					var _v2 = model.A;
 					if (!_v2.$) {
 						var selectedId = _v2.a;
 						return A2(
@@ -5563,53 +5603,35 @@ var $author$project$Main$update = F2(
 				return $author$project$Main$syncJsonTextArea(
 					_Utils_update(
 						model,
-						{q: newText, c: updatedPlaceNotes}));
-			case 0:
-				var _v3 = msg.a;
-				var x = _v3.a;
-				var y = _v3.b;
-				var textWidth = $author$project$Main$calculateTextWidth(model.q);
-				var newPlaceNoteId = model.P;
-				var newPlaceNote = {N: 50, g: newPlaceNoteId, J: model.q, L: textWidth, t: x - textWidth, u: y - 25};
-				return $author$project$Main$syncJsonTextArea(
-					_Utils_update(
-						model,
-						{
-							P: newPlaceNoteId + 1,
-							c: _Utils_ap(
-								model.c,
-								_List_fromArray(
-									[newPlaceNote])),
-							z: $elm$core$Maybe$Just(newPlaceNoteId)
-						}));
+						{p: newText, c: updatedPlaceNotes}));
 			case 3:
-				var _v4 = msg.a;
-				var mouseX = _v4.a;
-				var mouseY = _v4.b;
-				var _v5 = model.k;
-				if (!_v5.$) {
-					if (!_v5.a.$) {
-						var dragState = _v5.a.a;
+				var _v3 = msg.a;
+				var mouseX = _v3.a;
+				var mouseY = _v3.b;
+				var _v4 = model.m;
+				if (!_v4.$) {
+					if (!_v4.a.$) {
+						var dragState = _v4.a.a;
 						return _Utils_update(
 							model,
 							{
-								k: $elm$core$Maybe$Just(
+								m: $elm$core$Maybe$Just(
 									$author$project$Main$DraggingPlaceNote(
 										_Utils_update(
 											dragState,
 											{U: mouseX, V: mouseY})))
 							});
 					} else {
-						var initialX = _v5.a.a.X;
-						var initialY = _v5.a.a.Y;
+						var initialX = _v4.a.a.X;
+						var initialY = _v4.a.a.Y;
 						var dy = mouseY - initialY;
 						var dx = mouseX - initialX;
 						return _Utils_update(
 							model,
 							{
-								o: model.o + dx,
-								p: model.p + dy,
-								k: $elm$core$Maybe$Just(
+								i: model.i + dx,
+								j: model.j + dy,
+								m: $elm$core$Maybe$Just(
 									$author$project$Main$DraggingCamera(
 										{X: mouseX, Y: mouseY}))
 							});
@@ -5619,19 +5641,19 @@ var $author$project$Main$update = F2(
 				}
 			case 4:
 				var updatedPlaceNotes = function () {
-					var _v6 = model.k;
-					if ((!_v6.$) && (!_v6.a.$)) {
-						var draggedPlaceNoteId = _v6.a.a.W;
-						var offsetX = _v6.a.a._;
-						var offsetY = _v6.a.a.aa;
-						var currentMouseX = _v6.a.a.U;
-						var currentMouseY = _v6.a.a.V;
+					var _v5 = model.m;
+					if ((!_v5.$) && (!_v5.a.$)) {
+						var draggedPlaceNoteId = _v5.a.a.W;
+						var offsetX = _v5.a.a._;
+						var offsetY = _v5.a.a.aa;
+						var currentMouseX = _v5.a.a.U;
+						var currentMouseY = _v5.a.a.V;
 						return A2(
 							$elm$core$List$map,
 							function (placeNote) {
 								return _Utils_eq(placeNote.g, draggedPlaceNoteId) ? _Utils_update(
 									placeNote,
-									{t: (currentMouseX - model.o) - offsetX, u: (currentMouseY - model.p) - offsetY}) : placeNote;
+									{u: (currentMouseX - model.i) - offsetX, v: (currentMouseY - model.j) - offsetY}) : placeNote;
 							},
 							model.c);
 					} else {
@@ -5641,20 +5663,41 @@ var $author$project$Main$update = F2(
 				return $author$project$Main$syncJsonTextArea(
 					_Utils_update(
 						model,
-						{G: true, k: $elm$core$Maybe$Nothing, c: updatedPlaceNotes}));
+						{m: $elm$core$Maybe$Nothing, c: updatedPlaceNotes}));
 			case 2:
-				var _v7 = msg.a;
-				var mouseX = _v7.a;
-				var mouseY = _v7.b;
+				var _v6 = msg.a;
+				var mouseX = _v6.a;
+				var mouseY = _v6.b;
 				return $author$project$Main$syncJsonTextArea(
 					function () {
-						if (model.G) {
-							var _v8 = model.x;
-							if (_v8 === 1) {
+						var _v7 = model.y;
+						if (!_v7.$) {
+							var textToPlace = _v7.a;
+							var newPlaceNoteId = model.P;
+							var _v8 = $author$project$Main$calculateTextDimensions(textToPlace);
+							var noteWidth = _v8.a;
+							var noteHeight = _v8.b;
+							var newPlaceNote = {J: noteHeight, g: newPlaceNoteId, G: textToPlace, M: noteWidth, u: (mouseX - model.i) - ((noteWidth / 2) | 0), v: (mouseY - model.j) - ((noteHeight / 2) | 0)};
+							return _Utils_update(
+								model,
+								{
+									m: $elm$core$Maybe$Nothing,
+									p: textToPlace,
+									P: newPlaceNoteId + 1,
+									y: $elm$core$Maybe$Nothing,
+									c: _Utils_ap(
+										model.c,
+										_List_fromArray(
+											[newPlaceNote])),
+									A: $elm$core$Maybe$Just(newPlaceNoteId)
+								});
+						} else {
+							var _v9 = model.o;
+							if (_v9 === 1) {
 								var clickedPlaceNote = A2(
 									$author$project$Main$findClickedPlaceNote,
 									model.c,
-									_Utils_Tuple2(mouseX - model.o, mouseY - model.p));
+									_Utils_Tuple2(mouseX - model.i, mouseY - model.j));
 								var updatedPlaceNotes = function () {
 									if (!clickedPlaceNote.$) {
 										var placeNoteToBeRemoved = clickedPlaceNote.a;
@@ -5672,69 +5715,66 @@ var $author$project$Main$update = F2(
 									model,
 									{c: updatedPlaceNotes});
 							} else {
-								var _v10 = A2(
+								var _v11 = A2(
 									$author$project$Main$findClickedPlaceNote,
 									model.c,
-									_Utils_Tuple2(mouseX - model.o, mouseY - model.p));
-								if (!_v10.$) {
-									var placeNote = _v10.a;
+									_Utils_Tuple2(mouseX - model.i, mouseY - model.j));
+								if (!_v11.$) {
+									var placeNote = _v11.a;
 									return _Utils_update(
 										model,
 										{
-											k: $elm$core$Maybe$Just(
+											m: $elm$core$Maybe$Just(
 												$author$project$Main$DraggingPlaceNote(
-													{U: mouseX, V: mouseY, W: placeNote.g, _: (mouseX - model.o) - placeNote.t, aa: (mouseY - model.p) - placeNote.u})),
-											z: $elm$core$Maybe$Just(placeNote.g)
+													{U: mouseX, V: mouseY, W: placeNote.g, _: (mouseX - model.i) - placeNote.u, aa: (mouseY - model.j) - placeNote.v})),
+											p: placeNote.G,
+											A: $elm$core$Maybe$Just(placeNote.g)
 										});
 								} else {
 									return _Utils_update(
 										model,
 										{
-											k: $elm$core$Maybe$Just(
+											m: $elm$core$Maybe$Just(
 												$author$project$Main$DraggingCamera(
 													{X: mouseX, Y: mouseY}))
 										});
 								}
 							}
-						} else {
-							return _Utils_update(
-								model,
-								{k: $elm$core$Maybe$Nothing});
 						}
 					}());
-			case 8:
+			case 7:
 				return $author$project$Main$syncJsonTextArea(
 					function () {
-						var _v11 = model.z;
-						if (!_v11.$) {
-							var selectedId = _v11.a;
+						var _v12 = model.A;
+						if (!_v12.$) {
+							var selectedId = _v12.a;
 							var selectedPlaceNoteText = A2(
 								$elm$core$Maybe$withDefault,
-								model.q,
+								model.p,
 								A2(
 									$elm$core$Maybe$map,
 									function ($) {
-										return $.J;
+										return $.G;
 									},
 									A2($author$project$Main$findPlaceNoteById, selectedId, model.c)));
 							return _Utils_update(
 								model,
-								{q: selectedPlaceNoteText});
+								{p: selectedPlaceNoteText});
 						} else {
 							return model;
 						}
 					}());
-			case 9:
+			case 8:
 				var jsonString = msg.a;
 				var modelWithUpdatedTextArea = _Utils_update(
 					model,
-					{C: jsonString});
-				var _v12 = A2($elm$json$Json$Decode$decodeString, $author$project$Main$modelDecoder, jsonString);
-				if (!_v12.$) {
-					var decodedModel = _v12.a;
+					{D: jsonString});
+				var _v13 = A2($elm$json$Json$Decode$decodeString, $author$project$Main$modelDecoder, jsonString);
+				if (!_v13.$) {
+					var decodedModel = _v13.a;
 					return _Utils_update(
 						decodedModel,
-						{C: jsonString});
+						{D: jsonString});
 				} else {
 					return modelWithUpdatedTextArea;
 				}
@@ -5742,21 +5782,26 @@ var $author$project$Main$update = F2(
 				return model;
 		}
 	});
-var $author$project$Main$AddPlaceNote = function (a) {
-	return {$: 0, a: a};
-};
-var $author$project$Main$CopyTextFromSelectedPlaceNote = {$: 8};
+var $author$project$Main$CopyTextFromSelectedPlaceNote = {$: 7};
 var $author$project$Main$MouseUp = {$: 4};
-var $author$project$Main$PreventDrag = {$: 7};
+var $author$project$Main$PrepareNewPlaceNote = {$: 0};
 var $author$project$Main$ToggleMode = {$: 5};
 var $author$project$Main$UpdateModelFromJson = function (a) {
-	return {$: 9, a: a};
+	return {$: 8, a: a};
 };
 var $author$project$Main$UpdatePlaceNoteText = function (a) {
 	return {$: 1, a: a};
 };
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
+var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
 var $elm$html$Html$input = _VirtualDom_node('input');
 var $author$project$Main$MouseMove = function (a) {
 	return {$: 3, a: a};
@@ -5830,12 +5875,6 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 			$elm$html$Html$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
 };
-var $elm$html$Html$Events$onMouseDown = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'mousedown',
-		$elm$json$Json$Decode$succeed(msg));
-};
 var $elm$virtual_dom$VirtualDom$attribute = F2(
 	function (key, value) {
 		return A2(
@@ -5850,17 +5889,20 @@ var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$placeNoteView = F2(
 	function (model, placeNote) {
+		var noteBorder = _Utils_eq(
+			$elm$core$Maybe$Just(placeNote.g),
+			model.A) ? '2px solid #f87171' : '1px solid rgba(148, 163, 184, 0.25)';
 		var _v0 = function () {
-			var _v1 = model.k;
+			var _v1 = model.m;
 			if ((!_v1.$) && (!_v1.a.$)) {
 				var draggedPlaceNoteId = _v1.a.a.W;
 				var offsetX = _v1.a.a._;
 				var offsetY = _v1.a.a.aa;
 				var currentMouseX = _v1.a.a.U;
 				var currentMouseY = _v1.a.a.V;
-				return _Utils_eq(placeNote.g, draggedPlaceNoteId) ? _Utils_Tuple2((currentMouseX - model.o) - offsetX, (currentMouseY - model.p) - offsetY) : _Utils_Tuple2(placeNote.t, placeNote.u);
+				return _Utils_eq(placeNote.g, draggedPlaceNoteId) ? _Utils_Tuple2((currentMouseX - model.i) - offsetX, (currentMouseY - model.j) - offsetY) : _Utils_Tuple2(placeNote.u, placeNote.v);
 			} else {
-				return _Utils_Tuple2(placeNote.t, placeNote.u);
+				return _Utils_Tuple2(placeNote.u, placeNote.v);
 			}
 		}();
 		var displayX = _v0.a;
@@ -5873,31 +5915,32 @@ var $author$project$Main$placeNoteView = F2(
 					A2(
 					$elm$html$Html$Attributes$style,
 					'left',
-					$elm$core$String$fromInt(displayX + model.o) + 'px'),
+					$elm$core$String$fromInt(displayX + model.i) + 'px'),
 					A2(
 					$elm$html$Html$Attributes$style,
 					'top',
-					$elm$core$String$fromInt(displayY + model.p) + 'px'),
+					$elm$core$String$fromInt(displayY + model.j) + 'px'),
 					A2(
 					$elm$html$Html$Attributes$style,
 					'width',
-					$elm$core$String$fromInt(placeNote.L) + 'px'),
+					$elm$core$String$fromInt(placeNote.M) + 'px'),
 					A2(
 					$elm$html$Html$Attributes$style,
 					'height',
-					$elm$core$String$fromInt(placeNote.N) + 'px'),
-					A2($elm$html$Html$Attributes$style, 'background-color', '#007bff'),
-					A2($elm$html$Html$Attributes$style, 'border-radius', '8px'),
-					A2($elm$html$Html$Attributes$style, 'color', 'white'),
-					A2($elm$html$Html$Attributes$style, 'display', 'flex'),
-					A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
-					A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
-					A2(
-					$elm$html$Html$Attributes$style,
-					'border',
-					_Utils_eq(
-						$elm$core$Maybe$Just(placeNote.g),
-						model.z) ? '4px solid red' : '1px solid black'),
+					$elm$core$String$fromInt(placeNote.J) + 'px'),
+					A2($elm$html$Html$Attributes$style, 'background', 'linear-gradient(135deg, #2563eb, #7c3aed)'),
+					A2($elm$html$Html$Attributes$style, 'border-radius', '12px'),
+					A2($elm$html$Html$Attributes$style, 'color', '#f8fafc'),
+					A2($elm$html$Html$Attributes$style, 'padding', '12px'),
+					A2($elm$html$Html$Attributes$style, 'box-sizing', 'border-box'),
+					A2($elm$html$Html$Attributes$style, 'font-weight', '600'),
+					A2($elm$html$Html$Attributes$style, 'line-height', '1.3'),
+					A2($elm$html$Html$Attributes$style, 'letter-spacing', '0.01em'),
+					A2($elm$html$Html$Attributes$style, 'border', noteBorder),
+					A2($elm$html$Html$Attributes$style, 'box-shadow', '0 20px 45px rgba(15, 23, 42, 0.45)'),
+					A2($elm$html$Html$Attributes$style, 'user-select', 'none'),
+					A2($elm$html$Html$Attributes$style, 'white-space', 'pre-wrap'),
+					A2($elm$html$Html$Attributes$style, 'overflow-wrap', 'anywhere'),
 					A2(
 					$elm$html$Html$Attributes$attribute,
 					'data-id',
@@ -5905,7 +5948,7 @@ var $author$project$Main$placeNoteView = F2(
 				]),
 			_List_fromArray(
 				[
-					$elm$html$Html$text(placeNote.J)
+					$elm$html$Html$text(placeNote.G)
 				]));
 	});
 var $author$project$Main$NoOp = {$: 6};
@@ -5925,97 +5968,252 @@ var $author$project$Main$preventDragStart = A2(
 	$elm$json$Json$Decode$succeed(
 		_Utils_Tuple2($author$project$Main$NoOp, true)));
 var $elm$html$Html$textarea = _VirtualDom_node('textarea');
-var $elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$string(string));
-	});
+var $author$project$Main$touchCoordinatesDecoder = A3(
+	$elm$json$Json$Decode$map2,
+	F2(
+		function (x, y) {
+			return _Utils_Tuple2(x, y);
+		}),
+	A2($elm$json$Json$Decode$field, 'workspaceX', $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$field, 'workspaceY', $elm$json$Json$Decode$int));
+var $author$project$Main$touchMoveDecoder = A2(
+	$elm$json$Json$Decode$map,
+	function (_v0) {
+		var x = _v0.a;
+		var y = _v0.b;
+		return $author$project$Main$MouseMove(
+			_Utils_Tuple2(x, y));
+	},
+	A2(
+		$elm$json$Json$Decode$at,
+		_List_fromArray(
+			['touches', '0']),
+		$author$project$Main$touchCoordinatesDecoder));
+var $author$project$Main$touchStartDecoder = A2(
+	$elm$json$Json$Decode$map,
+	function (_v0) {
+		var x = _v0.a;
+		var y = _v0.b;
+		return $author$project$Main$MouseDown(
+			_Utils_Tuple2(x, y));
+	},
+	A2(
+		$elm$json$Json$Decode$at,
+		_List_fromArray(
+			['touches', '0']),
+		$author$project$Main$touchCoordinatesDecoder));
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $author$project$Main$view = function (model) {
+	var workspaceCursor = function () {
+		var _v7 = _Utils_Tuple2(model.o, model.y);
+		if (_v7.a === 1) {
+			var _v8 = _v7.a;
+			return 'not-allowed';
+		} else {
+			if (!_v7.b.$) {
+				return 'copy';
+			} else {
+				return 'grab';
+			}
+		}
+	}();
+	var workspaceAttributes = _List_fromArray(
+		[
+			$elm$html$Html$Attributes$id('workspace'),
+			A2($elm$html$Html$Attributes$style, 'flex', '1'),
+			A2($elm$html$Html$Attributes$style, 'position', 'relative'),
+			A2($elm$html$Html$Attributes$style, 'overflow', 'hidden'),
+			A2($elm$html$Html$Attributes$style, 'background-color', '#0b1220'),
+			A2($elm$html$Html$Attributes$style, 'border-top', '1px solid #1f2937'),
+			A2($elm$html$Html$Attributes$style, 'border-bottom', '1px solid #1f2937'),
+			A2($elm$html$Html$Attributes$style, 'touch-action', 'none'),
+			A2($elm$html$Html$Attributes$style, 'cursor', workspaceCursor),
+			A2(
+			$elm$html$Html$Events$on,
+			'mouseup',
+			$elm$json$Json$Decode$succeed($author$project$Main$MouseUp)),
+			A2($elm$html$Html$Events$on, 'mousemove', $author$project$Main$mouseMoveDecoder),
+			A2($elm$html$Html$Events$on, 'mousedown', $author$project$Main$mousePositionDecoder),
+			A2(
+			$elm$html$Html$Events$on,
+			'touchend',
+			$elm$json$Json$Decode$succeed($author$project$Main$MouseUp)),
+			A2($elm$html$Html$Events$on, 'touchmove', $author$project$Main$touchMoveDecoder),
+			A2($elm$html$Html$Events$on, 'touchstart', $author$project$Main$touchStartDecoder),
+			$author$project$Main$preventDragStart
+		]);
+	var modeLabel = function () {
+		var _v6 = model.o;
+		if (!_v6) {
+			return 'Move';
+		} else {
+			return 'Delete';
+		}
+	}();
+	var _v0 = function () {
+		var _v1 = _Utils_Tuple2(model.y, model.o);
+		if (!_v1.a.$) {
+			return _Utils_Tuple2('Tap anywhere on the workspace to place your new note.', '#facc15');
+		} else {
+			if (_v1.b === 1) {
+				var _v2 = _v1.a;
+				var _v3 = _v1.b;
+				return _Utils_Tuple2('Deletion mode: tap a note to remove it.', '#f87171');
+			} else {
+				var _v4 = _v1.a;
+				var _v5 = _v1.b;
+				return _Utils_Tuple2('Move mode: drag notes or the background to pan.', '#38bdf8');
+			}
+		}
+	}();
+	var statusMessage = _v0.a;
+	var statusColor = _v0.b;
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
 				A2($elm$html$Html$Attributes$style, 'width', '100%'),
 				A2($elm$html$Html$Attributes$style, 'height', '100vh'),
-				A2($elm$html$Html$Attributes$style, 'background-color', 'black'),
-				A2(
-				$elm$html$Html$Events$on,
-				'mouseup',
-				$elm$json$Json$Decode$succeed($author$project$Main$MouseUp)),
-				A2($elm$html$Html$Events$on, 'mousemove', $author$project$Main$mouseMoveDecoder),
-				A2($elm$html$Html$Events$on, 'mousedown', $author$project$Main$mousePositionDecoder),
-				$author$project$Main$preventDragStart
+				A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+				A2($elm$html$Html$Attributes$style, 'flex-direction', 'column'),
+				A2($elm$html$Html$Attributes$style, 'background-color', '#020617'),
+				A2($elm$html$Html$Attributes$style, 'color', '#e2e8f0'),
+				A2($elm$html$Html$Attributes$style, 'font-family', 'Inter, system-ui, sans-serif')
 			]),
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$input,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onMouseDown($author$project$Main$PreventDrag),
-						$elm$html$Html$Attributes$type_('text'),
-						$elm$html$Html$Attributes$value(model.q),
-						$elm$html$Html$Events$onInput($author$project$Main$UpdatePlaceNoteText)
-					]),
-				_List_Nil),
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onMouseDown($author$project$Main$PreventDrag),
-						$elm$html$Html$Events$onClick(
-						$author$project$Main$AddPlaceNote(
-							_Utils_Tuple2(100 - model.o, 60 - model.p)))
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Add PlaceNote')
-					])),
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onMouseDown($author$project$Main$PreventDrag),
-						$elm$html$Html$Events$onClick($author$project$Main$ToggleMode)
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						(!model.x) ? 'Switch to Deletion Mode' : 'Switch to Move Mode')
-					])),
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onMouseDown($author$project$Main$PreventDrag),
-						$elm$html$Html$Events$onClick($author$project$Main$CopyTextFromSelectedPlaceNote)
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Copy Text from PlaceNote')
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_Nil,
-				A2(
-					$elm$core$List$map,
-					function (placeNote) {
-						return A2($author$project$Main$placeNoteView, model, placeNote);
-					},
-					model.c)),
-				A2(
-				$elm$html$Html$textarea,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onInput($author$project$Main$UpdateModelFromJson),
-						$elm$html$Html$Attributes$value(model.C)
-					]),
-				_List_Nil)
-			]));
+		_Utils_ap(
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							A2($elm$html$Html$Attributes$style, 'padding', '12px'),
+							A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+							A2($elm$html$Html$Attributes$style, 'gap', '8px'),
+							A2($elm$html$Html$Attributes$style, 'flex-wrap', 'wrap'),
+							A2($elm$html$Html$Attributes$style, 'align-items', 'center')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$input,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$type_('text'),
+									$elm$html$Html$Attributes$value(model.p),
+									$elm$html$Html$Events$onInput($author$project$Main$UpdatePlaceNoteText),
+									A2($elm$html$Html$Attributes$style, 'padding', '8px 12px'),
+									A2($elm$html$Html$Attributes$style, 'min-width', '220px'),
+									A2($elm$html$Html$Attributes$style, 'background-color', '#0f172a'),
+									A2($elm$html$Html$Attributes$style, 'color', '#e2e8f0'),
+									A2($elm$html$Html$Attributes$style, 'border', '1px solid #1f2937'),
+									A2($elm$html$Html$Attributes$style, 'border-radius', '6px')
+								]),
+							_List_Nil),
+							A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Events$onClick($author$project$Main$PrepareNewPlaceNote),
+									A2($elm$html$Html$Attributes$style, 'padding', '8px 16px'),
+									A2($elm$html$Html$Attributes$style, 'background-color', '#2563eb'),
+									A2($elm$html$Html$Attributes$style, 'color', 'white'),
+									A2($elm$html$Html$Attributes$style, 'border', 'none'),
+									A2($elm$html$Html$Attributes$style, 'border-radius', '6px'),
+									A2($elm$html$Html$Attributes$style, 'font-weight', '600')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									_Utils_eq(model.y, $elm$core$Maybe$Nothing) ? 'Add note' : 'Tap to place')
+								])),
+							A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Events$onClick($author$project$Main$ToggleMode),
+									A2($elm$html$Html$Attributes$style, 'padding', '8px 16px'),
+									A2($elm$html$Html$Attributes$style, 'background-color', '#334155'),
+									A2($elm$html$Html$Attributes$style, 'color', '#e2e8f0'),
+									A2($elm$html$Html$Attributes$style, 'border', 'none'),
+									A2($elm$html$Html$Attributes$style, 'border-radius', '6px')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									(!model.o) ? 'Switch to delete' : 'Switch to move')
+								])),
+							A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Events$onClick($author$project$Main$CopyTextFromSelectedPlaceNote),
+									A2($elm$html$Html$Attributes$style, 'padding', '8px 16px'),
+									A2($elm$html$Html$Attributes$style, 'background-color', '#475569'),
+									A2($elm$html$Html$Attributes$style, 'color', '#e2e8f0'),
+									A2($elm$html$Html$Attributes$style, 'border', 'none'),
+									A2($elm$html$Html$Attributes$style, 'border-radius', '6px')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text('Load selected text')
+								])),
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									A2($elm$html$Html$Attributes$style, 'margin-left', 'auto'),
+									A2($elm$html$Html$Attributes$style, 'font-weight', '600')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text('Mode: ' + modeLabel)
+								]))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							A2($elm$html$Html$Attributes$style, 'padding', '0 12px 12px 12px'),
+							A2($elm$html$Html$Attributes$style, 'font-size', '14px'),
+							A2($elm$html$Html$Attributes$style, 'color', statusColor)
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(statusMessage)
+						])),
+					A2(
+					$elm$html$Html$div,
+					workspaceAttributes,
+					A2(
+						$elm$core$List$map,
+						function (placeNote) {
+							return A2($author$project$Main$placeNoteView, model, placeNote);
+						},
+						model.c))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$textarea,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onInput($author$project$Main$UpdateModelFromJson),
+							$elm$html$Html$Attributes$value(model.D),
+							A2($elm$html$Html$Attributes$style, 'width', '100%'),
+							A2($elm$html$Html$Attributes$style, 'min-height', '180px'),
+							A2($elm$html$Html$Attributes$style, 'background-color', '#0f172a'),
+							A2($elm$html$Html$Attributes$style, 'color', '#f8fafc'),
+							A2($elm$html$Html$Attributes$style, 'border', '1px solid #1f2937'),
+							A2($elm$html$Html$Attributes$style, 'border-radius', '0'),
+							A2($elm$html$Html$Attributes$style, 'padding', '12px'),
+							A2($elm$html$Html$Attributes$style, 'font-family', 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace'),
+							A2($elm$html$Html$Attributes$style, 'font-size', '13px'),
+							A2($elm$html$Html$Attributes$style, 'box-sizing', 'border-box')
+						]),
+					_List_Nil)
+				])));
 };
 var $author$project$Main$main = $elm$browser$Browser$sandbox(
 	{aM: $author$project$Main$init, aU: $author$project$Main$update, aV: $author$project$Main$view});
