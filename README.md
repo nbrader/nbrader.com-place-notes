@@ -1,4 +1,16 @@
-# nbrader.com-place-notes
-A web app in elm which works for phone and mouse which allows you to create rectangular text notes by entering text into a field at the top, pressing add and then pressing somewhere on the screen.
+# Place Notes
 
-I host it on my website [here](https://nbrader.com/PlaceNotes.html).
+A web app built with Elm that lets you create and organize rectangular text notes on an infinite canvas. Works seamlessly with both touch (phone/tablet) and mouse input.
+
+![Place Notes Demo](Place%20Notes.gif)
+
+## Features
+
+- **Create notes anywhere**: Enter text in the input field and click on the canvas to place your note at that location
+- **Move mode**: Drag individual notes to reposition them or drag the background to pan across your workspace
+- **Infinite canvas**: Your notes live on an unlimited 2D space that you can navigate freely
+- **Cross-platform**: Works on desktop browsers and mobile devices with touch support
+
+## Live Demo
+
+Try it out at [nbrader.com/PlaceNotes.html](https://nbrader.com/PlaceNotes.html)
