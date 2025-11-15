@@ -5631,7 +5631,7 @@ var $author$project$Main$update = F2(
 							function (placeNote) {
 								return _Utils_eq(placeNote.g, draggedPlaceNoteId) ? _Utils_update(
 									placeNote,
-									{t: currentMouseX - offsetX, u: currentMouseY - offsetY}) : placeNote;
+									{t: (currentMouseX - model.o) - offsetX, u: (currentMouseY - model.p) - offsetY}) : placeNote;
 							},
 							model.c);
 					} else {
@@ -5683,7 +5683,7 @@ var $author$project$Main$update = F2(
 										{
 											k: $elm$core$Maybe$Just(
 												$author$project$Main$DraggingPlaceNote(
-													{U: mouseX, V: mouseY, W: placeNote.g, _: mouseX - placeNote.t, aa: mouseY - placeNote.u})),
+													{U: mouseX, V: mouseY, W: placeNote.g, _: (mouseX - model.o) - placeNote.t, aa: (mouseY - model.p) - placeNote.u})),
 											z: $elm$core$Maybe$Just(placeNote.g)
 										});
 								} else {
@@ -5858,7 +5858,7 @@ var $author$project$Main$placeNoteView = F2(
 				var offsetY = _v1.a.a.aa;
 				var currentMouseX = _v1.a.a.U;
 				var currentMouseY = _v1.a.a.V;
-				return _Utils_eq(placeNote.g, draggedPlaceNoteId) ? _Utils_Tuple2(currentMouseX - offsetX, currentMouseY - offsetY) : _Utils_Tuple2(placeNote.t, placeNote.u);
+				return _Utils_eq(placeNote.g, draggedPlaceNoteId) ? _Utils_Tuple2((currentMouseX - model.o) - offsetX, (currentMouseY - model.p) - offsetY) : _Utils_Tuple2(placeNote.t, placeNote.u);
 			} else {
 				return _Utils_Tuple2(placeNote.t, placeNote.u);
 			}
