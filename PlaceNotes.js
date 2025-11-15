@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.ab.N === region.ag.N)
+	if (region.ae.O === region.aj.O)
 	{
-		return 'on line ' + region.ab.N;
+		return 'on line ' + region.ae.O;
 	}
-	return 'on lines ' + region.ab.N + ' through ' + region.ag.N;
+	return 'on lines ' + region.ae.O + ' through ' + region.aj.O;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aJ,
-		impl.aR,
-		impl.aP,
+		impl.aM,
+		impl.aU,
+		impl.aS,
 		function() { return function() {} }
 	);
 });
@@ -2720,8 +2720,8 @@ var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
 		w: func(record.w),
-		ac: record.ac,
-		_: record._
+		af: record.af,
+		ac: record.ac
 	}
 });
 
@@ -2990,10 +2990,10 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 
 		var value = result.a;
 		var message = !tag ? value : tag < 3 ? value.a : value.w;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ac;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.af;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value._) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.ac) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3943,11 +3943,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aJ,
-		impl.aR,
-		impl.aP,
+		impl.aM,
+		impl.aU,
+		impl.aS,
 		function(sendToApp, initialModel) {
-			var view = impl.aS;
+			var view = impl.aV;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3979,12 +3979,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aJ,
-		impl.aR,
-		impl.aP,
+		impl.aM,
+		impl.aU,
+		impl.aS,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.aa && impl.aa(sendToApp)
-			var view = impl.aS;
+			var divertHrefToApp = impl.ad && impl.ad(sendToApp)
+			var view = impl.aV;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3992,12 +3992,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aC);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aF);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.aQ) && (_VirtualDom_doc.title = title = doc.aQ);
+				(title !== doc.aT) && (_VirtualDom_doc.title = title = doc.aT);
 			});
 		}
 	);
@@ -4053,12 +4053,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.aL;
-	var onUrlRequest = impl.aM;
+	var onUrlChange = impl.aO;
+	var onUrlRequest = impl.aP;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		aa: function(sendToApp)
+		ad: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4074,9 +4074,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.as === next.as
-							&& curr.aj === next.aj
-							&& curr.ap.a === next.ap.a
+							&& curr.av === next.av
+							&& curr.am === next.am
+							&& curr.as.a === next.as.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4084,13 +4084,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aJ: function(flags)
+		aM: function(flags)
 		{
-			return A3(impl.aJ, flags, _Browser_getUrl(), key);
+			return A3(impl.aM, flags, _Browser_getUrl(), key);
 		},
-		aS: impl.aS,
-		aR: impl.aR,
-		aP: impl.aP
+		aV: impl.aV,
+		aU: impl.aU,
+		aS: impl.aS
 	});
 }
 
@@ -4156,17 +4156,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { aH: 'hidden', aD: 'visibilitychange' }
+		? { aK: 'hidden', aG: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { aH: 'mozHidden', aD: 'mozvisibilitychange' }
+		? { aK: 'mozHidden', aG: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { aH: 'msHidden', aD: 'msvisibilitychange' }
+		? { aK: 'msHidden', aG: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { aH: 'webkitHidden', aD: 'webkitvisibilitychange' }
-		: { aH: 'hidden', aD: 'visibilitychange' };
+		? { aK: 'webkitHidden', aG: 'webkitvisibilitychange' }
+		: { aK: 'hidden', aG: 'visibilitychange' };
 }
 
 
@@ -4247,12 +4247,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		aw: _Browser_getScene(),
-		az: {
-			l: _Browser_window.pageXOffset,
-			m: _Browser_window.pageYOffset,
-			F: _Browser_doc.documentElement.clientWidth,
-			I: _Browser_doc.documentElement.clientHeight
+		az: _Browser_getScene(),
+		aC: {
+			t: _Browser_window.pageXOffset,
+			u: _Browser_window.pageYOffset,
+			L: _Browser_doc.documentElement.clientWidth,
+			N: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4262,8 +4262,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		F: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		I: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		L: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		N: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4286,15 +4286,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			aw: {
-				F: node.scrollWidth,
-				I: node.scrollHeight
-			},
 			az: {
-				l: node.scrollLeft,
-				m: node.scrollTop,
-				F: node.clientWidth,
-				I: node.clientHeight
+				L: node.scrollWidth,
+				N: node.scrollHeight
+			},
+			aC: {
+				t: node.scrollLeft,
+				u: node.scrollTop,
+				L: node.clientWidth,
+				N: node.clientHeight
 			}
 		};
 	});
@@ -4324,18 +4324,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			aw: _Browser_getScene(),
-			az: {
-				l: x,
-				m: y,
-				F: _Browser_doc.documentElement.clientWidth,
-				I: _Browser_doc.documentElement.clientHeight
+			az: _Browser_getScene(),
+			aC: {
+				t: x,
+				u: y,
+				L: _Browser_doc.documentElement.clientWidth,
+				N: _Browser_doc.documentElement.clientHeight
 			},
-			aF: {
-				l: x + rect.left,
-				m: y + rect.top,
-				F: rect.width,
-				I: rect.height
+			aI: {
+				t: x + rect.left,
+				u: y + rect.top,
+				L: rect.width,
+				N: rect.height
 			}
 		};
 	});
@@ -4453,7 +4453,10 @@ var $elm$core$Basics$LT = 0;
 var $author$project$Main$MoveMode = 0;
 var $elm$core$Maybe$Nothing = {$: 1};
 var $elm$core$Basics$True = 0;
-var $author$project$Main$init = {G: true, p: 0, q: 0, v: $elm$core$Maybe$Nothing, r: 'Write a note here.', x: 0, O: 0, e: _List_Nil, z: $elm$core$Maybe$Nothing};
+var $elm$core$Basics$apL = F2(
+	function (f, x) {
+		return f(x);
+	});
 var $elm$core$Result$Err = function (a) {
 	return {$: 1, a: a};
 };
@@ -4714,10 +4717,6 @@ var $elm$core$Elm$JsArray$initialize = _JsArray_initialize;
 var $elm$core$Array$Leaf = function (a) {
 	return {$: 1, a: a};
 };
-var $elm$core$Basics$apL = F2(
-	function (f, x) {
-		return f(x);
-	});
 var $elm$core$Basics$apR = F2(
 	function (x, f) {
 		return f(x);
@@ -4782,22 +4781,22 @@ var $elm$core$Array$builderToArray = F2(
 		if (!builder.a) {
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.c),
+				$elm$core$Elm$JsArray$length(builder.d),
 				$elm$core$Array$shiftStep,
 				$elm$core$Elm$JsArray$empty,
-				builder.c);
+				builder.d);
 		} else {
 			var treeLen = builder.a * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
-			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.d) : builder.d;
+			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.e) : builder.e;
 			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.a);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.c) + treeLen,
+				$elm$core$Elm$JsArray$length(builder.d) + treeLen,
 				A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep),
 				tree,
-				builder.c);
+				builder.d);
 		}
 	});
 var $elm$core$Basics$idiv = _Basics_idiv;
@@ -4810,7 +4809,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{d: nodeList, a: (len / $elm$core$Array$branchFactor) | 0, c: tail});
+					{e: nodeList, a: (len / $elm$core$Array$branchFactor) | 0, d: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -4847,6 +4846,116 @@ var $elm$core$Result$isOk = function (result) {
 		return false;
 	}
 };
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $elm$json$Json$Encode$int = _Json_wrap;
+var $elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(0),
+				entries));
+	});
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(0),
+			pairs));
+};
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $author$project$Main$encodePlaceNotes = function (notes) {
+	var encodeNote = function (note) {
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'id',
+					$elm$json$Json$Encode$int(note.g)),
+					_Utils_Tuple2(
+					'x',
+					$elm$json$Json$Encode$int(note.t)),
+					_Utils_Tuple2(
+					'y',
+					$elm$json$Json$Encode$int(note.u)),
+					_Utils_Tuple2(
+					'width',
+					$elm$json$Json$Encode$int(note.L)),
+					_Utils_Tuple2(
+					'height',
+					$elm$json$Json$Encode$int(note.N)),
+					_Utils_Tuple2(
+					'text',
+					$elm$json$Json$Encode$string(note.J))
+				]));
+	};
+	return A2($elm$json$Json$Encode$list, encodeNote, notes);
+};
+var $elm$json$Json$Encode$null = _Json_encodeNull;
+var $author$project$Main$serializeModel = function (model) {
+	return A2(
+		$elm$json$Json$Encode$encode,
+		2,
+		$elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'placeNotes',
+					$author$project$Main$encodePlaceNotes(model.c)),
+					_Utils_Tuple2(
+					'nextPlaceNoteId',
+					$elm$json$Json$Encode$int(model.P)),
+					_Utils_Tuple2(
+					'cameraX',
+					$elm$json$Json$Encode$int(model.o)),
+					_Utils_Tuple2(
+					'cameraY',
+					$elm$json$Json$Encode$int(model.p)),
+					_Utils_Tuple2(
+					'mode',
+					$elm$json$Json$Encode$string(
+						function () {
+							var _v0 = model.x;
+							if (!_v0) {
+								return 'MoveMode';
+							} else {
+								return 'DeletionMode';
+							}
+						}())),
+					_Utils_Tuple2(
+					'inputText',
+					$elm$json$Json$Encode$string(model.q)),
+					_Utils_Tuple2(
+					'allowDrag',
+					$elm$json$Json$Encode$bool(model.G)),
+					_Utils_Tuple2(
+					'selectedPlaceNoteId',
+					function () {
+						var _v1 = model.z;
+						if (!_v1.$) {
+							var id = _v1.a;
+							return $elm$json$Json$Encode$int(id);
+						} else {
+							return $elm$json$Json$Encode$null;
+						}
+					}())
+				])));
+};
+var $author$project$Main$init = function () {
+	var initialModel = {G: true, o: 0, p: 0, k: $elm$core$Maybe$Nothing, q: 'Write a note here.', C: '', x: 0, P: 0, c: _List_Nil, z: $elm$core$Maybe$Nothing};
+	return _Utils_update(
+		initialModel,
+		{
+			C: $author$project$Main$serializeModel(initialModel)
+		});
+}();
 var $elm$json$Json$Decode$map = _Json_map1;
 var $elm$json$Json$Decode$map2 = _Json_map2;
 var $elm$json$Json$Decode$succeed = _Json_succeed;
@@ -4876,7 +4985,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {ai: fragment, aj: host, an: path, ap: port_, as: protocol, at: query};
+		return {al: fragment, am: host, aq: path, as: port_, av: protocol, aw: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5161,19 +5270,19 @@ var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $elm$browser$Browser$sandbox = function (impl) {
 	return _Browser_element(
 		{
-			aJ: function (_v0) {
-				return _Utils_Tuple2(impl.aJ, $elm$core$Platform$Cmd$none);
+			aM: function (_v0) {
+				return _Utils_Tuple2(impl.aM, $elm$core$Platform$Cmd$none);
 			},
-			aP: function (_v1) {
+			aS: function (_v1) {
 				return $elm$core$Platform$Sub$none;
 			},
-			aR: F2(
+			aU: F2(
 				function (msg, model) {
 					return _Utils_Tuple2(
-						A2(impl.aR, msg, model),
+						A2(impl.aU, msg, model),
 						$elm$core$Platform$Cmd$none);
 				}),
-			aS: impl.aS
+			aV: impl.aV
 		});
 };
 var $author$project$Main$DeletionMode = 1;
@@ -5184,7 +5293,10 @@ var $author$project$Main$DraggingPlaceNote = function (a) {
 	return {$: 0, a: a};
 };
 var $author$project$Main$calculateTextWidth = function (text) {
-	return 8 * $elm$core$String$length(text);
+	return A2(
+		$elm$core$Basics$max,
+		40,
+		8 * $elm$core$String$length(text));
 };
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$core$List$filter = F2(
@@ -5199,29 +5311,6 @@ var $elm$core$List$filter = F2(
 			list);
 	});
 var $elm$core$Basics$ge = _Utils_ge;
-var $author$project$Main$findClickedPlaceNote = F2(
-	function (placeNotes, _v0) {
-		findClickedPlaceNote:
-		while (true) {
-			var mouseX = _v0.a;
-			var mouseY = _v0.b;
-			if (!placeNotes.b) {
-				return $elm$core$Maybe$Nothing;
-			} else {
-				var placeNote = placeNotes.a;
-				var rest = placeNotes.b;
-				if ((_Utils_cmp(mouseX, placeNote.l) > -1) && ((_Utils_cmp(mouseX, placeNote.l + placeNote.F) < 1) && ((_Utils_cmp(mouseY, placeNote.m) > -1) && (_Utils_cmp(mouseY, placeNote.m + placeNote.I) < 1)))) {
-					return $elm$core$Maybe$Just(placeNote);
-				} else {
-					var $temp$placeNotes = rest,
-						$temp$_v0 = _Utils_Tuple2(mouseX, mouseY);
-					placeNotes = $temp$placeNotes;
-					_v0 = $temp$_v0;
-					continue findClickedPlaceNote;
-				}
-			}
-		}
-	});
 var $elm$core$List$head = function (list) {
 	if (list.b) {
 		var x = list.a;
@@ -5231,11 +5320,38 @@ var $elm$core$List$head = function (list) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $author$project$Main$isClickedPlaceNote = F2(
-	function (_v0, placeNote) {
+var $author$project$Main$findClickedPlaceNote = F2(
+	function (placeNotes, _v0) {
 		var mouseX = _v0.a;
 		var mouseY = _v0.b;
-		return (_Utils_cmp(mouseX, placeNote.l) > -1) && ((_Utils_cmp(mouseX, placeNote.l + placeNote.F) < 1) && ((_Utils_cmp(mouseY, placeNote.m) > -1) && (_Utils_cmp(mouseY, placeNote.m + placeNote.I) < 1)));
+		return $elm$core$List$head(
+			A2(
+				$elm$core$List$filter,
+				function (placeNote) {
+					return (_Utils_cmp(mouseX, placeNote.t) > -1) && ((_Utils_cmp(mouseX, placeNote.t + placeNote.L) < 1) && ((_Utils_cmp(mouseY, placeNote.u) > -1) && (_Utils_cmp(mouseY, placeNote.u + placeNote.N) < 1)));
+				},
+				$elm$core$List$reverse(placeNotes)));
+	});
+var $author$project$Main$findPlaceNoteById = F2(
+	function (targetId, placeNotes) {
+		findPlaceNoteById:
+		while (true) {
+			if (!placeNotes.b) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var placeNote = placeNotes.a;
+				var rest = placeNotes.b;
+				if (_Utils_eq(placeNote.g, targetId)) {
+					return $elm$core$Maybe$Just(placeNote);
+				} else {
+					var $temp$targetId = targetId,
+						$temp$placeNotes = rest;
+					targetId = $temp$targetId;
+					placeNotes = $temp$placeNotes;
+					continue findPlaceNoteById;
+				}
+			}
+		}
 	});
 var $elm$core$Maybe$map = F2(
 	function (f, maybe) {
@@ -5247,18 +5363,34 @@ var $elm$core$Maybe$map = F2(
 			return $elm$core$Maybe$Nothing;
 		}
 	});
-var $author$project$Main$Model = F9(
-	function (placeNotes, nextPlaceNoteId, dragging, cameraX, cameraY, mode, inputText, allowDrag, selectedPlaceNoteId) {
-		return {G: allowDrag, p: cameraX, q: cameraY, v: dragging, r: inputText, x: mode, O: nextPlaceNoteId, e: placeNotes, z: selectedPlaceNoteId};
-	});
+var $author$project$Main$Model = function (placeNotes) {
+	return function (nextPlaceNoteId) {
+		return function (dragging) {
+			return function (cameraX) {
+				return function (cameraY) {
+					return function (mode) {
+						return function (inputText) {
+							return function (allowDrag) {
+								return function (selectedPlaceNoteId) {
+									return function (jsonTextArea) {
+										return {G: allowDrag, o: cameraX, p: cameraY, k: dragging, q: inputText, C: jsonTextArea, x: mode, P: nextPlaceNoteId, c: placeNotes, z: selectedPlaceNoteId};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $elm$json$Json$Decode$list = _Json_decodeList;
 var $elm$json$Json$Decode$andThen = _Json_andThen;
-var $elm$json$Json$Decode$map4 = _Json_map4;
 var $elm$json$Json$Decode$map5 = _Json_map5;
-var $author$project$Main$map9 = function (constructor) {
+var $author$project$Main$map10 = function (constructor) {
 	return function (decA) {
 		return function (decB) {
 			return function (decC) {
@@ -5268,31 +5400,34 @@ var $author$project$Main$map9 = function (constructor) {
 							return function (decG) {
 								return function (decH) {
 									return function (decI) {
-										return A2(
-											$elm$json$Json$Decode$andThen,
-											function (valueSoFar5) {
-												return A5(
-													$elm$json$Json$Decode$map4,
-													F4(
-														function (f, g, h, i) {
-															return A4(valueSoFar5, f, g, h, i);
+										return function (decJ) {
+											return A2(
+												$elm$json$Json$Decode$andThen,
+												function (valueSoFar5) {
+													return A6(
+														$elm$json$Json$Decode$map5,
+														F5(
+															function (f, g, h, i, j) {
+																return A5(valueSoFar5, f, g, h, i, j);
+															}),
+														decF,
+														decG,
+														decH,
+														decI,
+														decJ);
+												},
+												A6(
+													$elm$json$Json$Decode$map5,
+													F5(
+														function (a, b, c, d, e) {
+															return A5(constructor, a, b, c, d, e);
 														}),
-													decF,
-													decG,
-													decH,
-													decI);
-											},
-											A6(
-												$elm$json$Json$Decode$map5,
-												F5(
-													function (a, b, c, d, e) {
-														return A5(constructor, a, b, c, d, e);
-													}),
-												decA,
-												decB,
-												decC,
-												decD,
-												decE));
+													decA,
+													decB,
+													decC,
+													decD,
+													decE));
+										};
 									};
 								};
 							};
@@ -5314,7 +5449,7 @@ var $elm$json$Json$Decode$maybe = function (decoder) {
 };
 var $author$project$Main$PlaceNote = F6(
 	function (id, x, y, width, height, text) {
-		return {I: height, g: id, K: text, F: width, l: x, m: y};
+		return {N: height, g: id, J: text, L: width, t: x, u: y};
 	});
 var $author$project$Main$map6 = F7(
 	function (constructor, decA, decB, decC, decD, decE, decF) {
@@ -5340,7 +5475,7 @@ var $author$project$Main$placeNoteDecoder = A7(
 	A2($elm$json$Json$Decode$field, 'width', $elm$json$Json$Decode$int),
 	A2($elm$json$Json$Decode$field, 'height', $elm$json$Json$Decode$int),
 	A2($elm$json$Json$Decode$field, 'text', $elm$json$Json$Decode$string));
-var $author$project$Main$modelDecoder = $author$project$Main$map9($author$project$Main$Model)(
+var $author$project$Main$modelDecoder = $author$project$Main$map10($author$project$Main$Model)(
 	A2(
 		$elm$json$Json$Decode$field,
 		'placeNotes',
@@ -5361,17 +5496,24 @@ var $author$project$Main$modelDecoder = $author$project$Main$map9($author$projec
 	A2($elm$json$Json$Decode$field, 'inputText', $elm$json$Json$Decode$string))(
 	A2($elm$json$Json$Decode$field, 'allowDrag', $elm$json$Json$Decode$bool))(
 	$elm$json$Json$Decode$maybe(
-		A2($elm$json$Json$Decode$field, 'selectedPlaceNoteId', $elm$json$Json$Decode$int)));
+		A2($elm$json$Json$Decode$field, 'selectedPlaceNoteId', $elm$json$Json$Decode$int)))(
+	$elm$json$Json$Decode$succeed(''));
 var $elm$core$Basics$neq = _Utils_notEqual;
-var $author$project$Main$updatePlaceNotePosition = F4(
-	function (_v0, draggedPlaceNoteId, _v1, placeNote) {
-		var mouseX = _v0.a;
-		var mouseY = _v0.b;
-		var offsetX = _v1.a;
-		var offsetY = _v1.b;
-		return _Utils_eq(placeNote.g, draggedPlaceNoteId) ? _Utils_update(
+var $author$project$Main$syncJsonTextArea = function (model) {
+	return _Utils_update(
+		model,
+		{
+			C: $author$project$Main$serializeModel(model)
+		});
+};
+var $author$project$Main$updatePlaceNoteTextById = F3(
+	function (targetId, newText, placeNote) {
+		return _Utils_eq(placeNote.g, targetId) ? _Utils_update(
 			placeNote,
-			{l: mouseX - offsetX, m: mouseY - offsetY}) : placeNote;
+			{
+				J: newText,
+				L: $author$project$Main$calculateTextWidth(newText)
+			}) : placeNote;
 	});
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
@@ -5386,20 +5528,24 @@ var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 7:
-				return _Utils_update(
-					model,
-					{G: false});
+				return $author$project$Main$syncJsonTextArea(
+					_Utils_update(
+						model,
+						{G: false}));
 			case 5:
-				var _v1 = model.x;
-				if (!_v1) {
-					return _Utils_update(
-						model,
-						{x: 1});
-				} else {
-					return _Utils_update(
-						model,
-						{x: 0});
-				}
+				return $author$project$Main$syncJsonTextArea(
+					function () {
+						var _v1 = model.x;
+						if (!_v1) {
+							return _Utils_update(
+								model,
+								{x: 1});
+						} else {
+							return _Utils_update(
+								model,
+								{x: 0});
+						}
+					}());
 			case 1:
 				var newText = msg.a;
 				var updatedPlaceNotes = function () {
@@ -5408,177 +5554,189 @@ var $author$project$Main$update = F2(
 						var selectedId = _v2.a;
 						return A2(
 							$elm$core$List$map,
-							function (placeNote) {
-								return _Utils_eq(placeNote.g, selectedId) ? _Utils_update(
-									placeNote,
-									{
-										K: newText,
-										F: $author$project$Main$calculateTextWidth(newText)
-									}) : placeNote;
-							},
-							model.e);
+							A2($author$project$Main$updatePlaceNoteTextById, selectedId, newText),
+							model.c);
 					} else {
-						return model.e;
+						return model.c;
 					}
 				}();
-				return _Utils_update(
-					model,
-					{r: newText, e: updatedPlaceNotes});
+				return $author$project$Main$syncJsonTextArea(
+					_Utils_update(
+						model,
+						{q: newText, c: updatedPlaceNotes}));
 			case 0:
 				var _v3 = msg.a;
 				var x = _v3.a;
 				var y = _v3.b;
-				var textWidth = $author$project$Main$calculateTextWidth(model.r);
-				var newPlaceNoteId = model.O;
-				var newPlaceNote = {I: 50, g: newPlaceNoteId, K: model.r, F: textWidth, l: x - textWidth, m: y - 25};
-				return _Utils_update(
-					model,
-					{
-						O: newPlaceNoteId + 1,
-						e: A2($elm$core$List$cons, newPlaceNote, model.e),
-						z: $elm$core$Maybe$Just(newPlaceNoteId)
-					});
+				var textWidth = $author$project$Main$calculateTextWidth(model.q);
+				var newPlaceNoteId = model.P;
+				var newPlaceNote = {N: 50, g: newPlaceNoteId, J: model.q, L: textWidth, t: x - textWidth, u: y - 25};
+				return $author$project$Main$syncJsonTextArea(
+					_Utils_update(
+						model,
+						{
+							P: newPlaceNoteId + 1,
+							c: _Utils_ap(
+								model.c,
+								_List_fromArray(
+									[newPlaceNote])),
+							z: $elm$core$Maybe$Just(newPlaceNoteId)
+						}));
 			case 3:
 				var _v4 = msg.a;
 				var mouseX = _v4.a;
 				var mouseY = _v4.b;
-				var _v5 = model.v;
+				var _v5 = model.k;
 				if (!_v5.$) {
 					if (!_v5.a.$) {
-						var draggedPlaceNoteId = _v5.a.a.T;
-						var offsetX = _v5.a.a.X;
-						var offsetY = _v5.a.a.Y;
+						var dragState = _v5.a.a;
 						return _Utils_update(
 							model,
 							{
-								e: A2(
-									$elm$core$List$map,
-									A3(
-										$author$project$Main$updatePlaceNotePosition,
-										_Utils_Tuple2(mouseX, mouseY),
-										draggedPlaceNoteId,
-										_Utils_Tuple2(offsetX, offsetY)),
-									model.e)
+								k: $elm$core$Maybe$Just(
+									$author$project$Main$DraggingPlaceNote(
+										_Utils_update(
+											dragState,
+											{U: mouseX, V: mouseY})))
 							});
 					} else {
-						var initialX = _v5.a.a.U;
-						var initialY = _v5.a.a.V;
+						var initialX = _v5.a.a.X;
+						var initialY = _v5.a.a.Y;
 						var dy = mouseY - initialY;
 						var dx = mouseX - initialX;
 						return _Utils_update(
 							model,
 							{
-								p: model.p + dx,
-								q: model.q + dy,
-								v: $elm$core$Maybe$Just(
+								o: model.o + dx,
+								p: model.p + dy,
+								k: $elm$core$Maybe$Just(
 									$author$project$Main$DraggingCamera(
-										{U: mouseX, V: mouseY}))
+										{X: mouseX, Y: mouseY}))
 							});
 					}
 				} else {
 					return model;
 				}
 			case 4:
-				return _Utils_update(
-					model,
-					{G: true, v: $elm$core$Maybe$Nothing});
-			case 2:
-				var _v6 = msg.a;
-				var mouseX = _v6.a;
-				var mouseY = _v6.b;
-				if (model.G) {
-					var _v7 = model.x;
-					if (_v7 === 1) {
-						var reversedPlaceNotes = $elm$core$List$reverse(model.e);
-						var clickedPlaceNote = $elm$core$List$head(
-							A2(
-								$elm$core$List$filter,
-								function (placeNote) {
-									return A2(
-										$author$project$Main$isClickedPlaceNote,
-										_Utils_Tuple2(mouseX - model.p, mouseY - model.q),
-										placeNote);
-								},
-								reversedPlaceNotes));
-						var updatedPlaceNotes = function () {
-							if (!clickedPlaceNote.$) {
-								var placeNoteToBeRemoved = clickedPlaceNote.a;
-								return A2(
-									$elm$core$List$filter,
-									function (placeNote) {
-										return !_Utils_eq(placeNote.g, placeNoteToBeRemoved.g);
-									},
-									model.e);
-							} else {
-								return model.e;
-							}
-						}();
-						return _Utils_update(
-							model,
-							{e: updatedPlaceNotes});
+				var updatedPlaceNotes = function () {
+					var _v6 = model.k;
+					if ((!_v6.$) && (!_v6.a.$)) {
+						var draggedPlaceNoteId = _v6.a.a.W;
+						var offsetX = _v6.a.a._;
+						var offsetY = _v6.a.a.aa;
+						var currentMouseX = _v6.a.a.U;
+						var currentMouseY = _v6.a.a.V;
+						return A2(
+							$elm$core$List$map,
+							function (placeNote) {
+								return _Utils_eq(placeNote.g, draggedPlaceNoteId) ? _Utils_update(
+									placeNote,
+									{t: currentMouseX - offsetX, u: currentMouseY - offsetY}) : placeNote;
+							},
+							model.c);
 					} else {
-						var _v9 = A2(
-							$author$project$Main$findClickedPlaceNote,
-							model.e,
-							_Utils_Tuple2(mouseX - model.p, mouseY - model.q));
-						if (!_v9.$) {
-							var placeNote = _v9.a;
-							return _Utils_update(
-								model,
-								{
-									v: $elm$core$Maybe$Just(
-										$author$project$Main$DraggingPlaceNote(
-											{T: placeNote.g, X: mouseX - placeNote.l, Y: mouseY - placeNote.m})),
-									z: $elm$core$Maybe$Just(placeNote.g)
-								});
+						return model.c;
+					}
+				}();
+				return $author$project$Main$syncJsonTextArea(
+					_Utils_update(
+						model,
+						{G: true, k: $elm$core$Maybe$Nothing, c: updatedPlaceNotes}));
+			case 2:
+				var _v7 = msg.a;
+				var mouseX = _v7.a;
+				var mouseY = _v7.b;
+				return $author$project$Main$syncJsonTextArea(
+					function () {
+						if (model.G) {
+							var _v8 = model.x;
+							if (_v8 === 1) {
+								var clickedPlaceNote = A2(
+									$author$project$Main$findClickedPlaceNote,
+									model.c,
+									_Utils_Tuple2(mouseX - model.o, mouseY - model.p));
+								var updatedPlaceNotes = function () {
+									if (!clickedPlaceNote.$) {
+										var placeNoteToBeRemoved = clickedPlaceNote.a;
+										return A2(
+											$elm$core$List$filter,
+											function (placeNote) {
+												return !_Utils_eq(placeNote.g, placeNoteToBeRemoved.g);
+											},
+											model.c);
+									} else {
+										return model.c;
+									}
+								}();
+								return _Utils_update(
+									model,
+									{c: updatedPlaceNotes});
+							} else {
+								var _v10 = A2(
+									$author$project$Main$findClickedPlaceNote,
+									model.c,
+									_Utils_Tuple2(mouseX - model.o, mouseY - model.p));
+								if (!_v10.$) {
+									var placeNote = _v10.a;
+									return _Utils_update(
+										model,
+										{
+											k: $elm$core$Maybe$Just(
+												$author$project$Main$DraggingPlaceNote(
+													{U: mouseX, V: mouseY, W: placeNote.g, _: mouseX - placeNote.t, aa: mouseY - placeNote.u})),
+											z: $elm$core$Maybe$Just(placeNote.g)
+										});
+								} else {
+									return _Utils_update(
+										model,
+										{
+											k: $elm$core$Maybe$Just(
+												$author$project$Main$DraggingCamera(
+													{X: mouseX, Y: mouseY}))
+										});
+								}
+							}
 						} else {
 							return _Utils_update(
 								model,
-								{
-									v: $elm$core$Maybe$Just(
-										$author$project$Main$DraggingCamera(
-											{U: mouseX, V: mouseY}))
-								});
+								{k: $elm$core$Maybe$Nothing});
 						}
-					}
-				} else {
-					return _Utils_update(
-						model,
-						{v: $elm$core$Maybe$Nothing});
-				}
+					}());
 			case 8:
-				var _v10 = model.z;
-				if (!_v10.$) {
-					var selectedId = _v10.a;
-					var selectedPlaceNoteText = A2(
-						$elm$core$Maybe$withDefault,
-						model.r,
-						A2(
-							$elm$core$Maybe$map,
-							function (placeNote) {
-								return placeNote.K;
-							},
-							$elm$core$List$head(
+				return $author$project$Main$syncJsonTextArea(
+					function () {
+						var _v11 = model.z;
+						if (!_v11.$) {
+							var selectedId = _v11.a;
+							var selectedPlaceNoteText = A2(
+								$elm$core$Maybe$withDefault,
+								model.q,
 								A2(
-									$elm$core$List$filter,
-									function (placeNote) {
-										return _Utils_eq(placeNote.g, selectedId);
+									$elm$core$Maybe$map,
+									function ($) {
+										return $.J;
 									},
-									model.e))));
-					return _Utils_update(
-						model,
-						{r: selectedPlaceNoteText});
-				} else {
-					return model;
-				}
+									A2($author$project$Main$findPlaceNoteById, selectedId, model.c)));
+							return _Utils_update(
+								model,
+								{q: selectedPlaceNoteText});
+						} else {
+							return model;
+						}
+					}());
 			case 9:
 				var jsonString = msg.a;
-				var _v11 = A2($elm$json$Json$Decode$decodeString, $author$project$Main$modelDecoder, jsonString);
-				if (!_v11.$) {
-					var newModel = _v11.a;
-					return newModel;
+				var modelWithUpdatedTextArea = _Utils_update(
+					model,
+					{C: jsonString});
+				var _v12 = A2($elm$json$Json$Decode$decodeString, $author$project$Main$modelDecoder, jsonString);
+				if (!_v12.$) {
+					var decodedModel = _v12.a;
+					return _Utils_update(
+						decodedModel,
+						{C: jsonString});
 				} else {
-					return model;
+					return modelWithUpdatedTextArea;
 				}
 			default:
 				return model;
@@ -5692,6 +5850,21 @@ var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$placeNoteView = F2(
 	function (model, placeNote) {
+		var _v0 = function () {
+			var _v1 = model.k;
+			if ((!_v1.$) && (!_v1.a.$)) {
+				var draggedPlaceNoteId = _v1.a.a.W;
+				var offsetX = _v1.a.a._;
+				var offsetY = _v1.a.a.aa;
+				var currentMouseX = _v1.a.a.U;
+				var currentMouseY = _v1.a.a.V;
+				return _Utils_eq(placeNote.g, draggedPlaceNoteId) ? _Utils_Tuple2(currentMouseX - offsetX, currentMouseY - offsetY) : _Utils_Tuple2(placeNote.t, placeNote.u);
+			} else {
+				return _Utils_Tuple2(placeNote.t, placeNote.u);
+			}
+		}();
+		var displayX = _v0.a;
+		var displayY = _v0.b;
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
@@ -5700,19 +5873,19 @@ var $author$project$Main$placeNoteView = F2(
 					A2(
 					$elm$html$Html$Attributes$style,
 					'left',
-					$elm$core$String$fromInt(placeNote.l + model.p) + 'px'),
+					$elm$core$String$fromInt(displayX + model.o) + 'px'),
 					A2(
 					$elm$html$Html$Attributes$style,
 					'top',
-					$elm$core$String$fromInt(placeNote.m + model.q) + 'px'),
+					$elm$core$String$fromInt(displayY + model.p) + 'px'),
 					A2(
 					$elm$html$Html$Attributes$style,
 					'width',
-					$elm$core$String$fromInt(placeNote.F) + 'px'),
+					$elm$core$String$fromInt(placeNote.L) + 'px'),
 					A2(
 					$elm$html$Html$Attributes$style,
 					'height',
-					$elm$core$String$fromInt(placeNote.I) + 'px'),
+					$elm$core$String$fromInt(placeNote.N) + 'px'),
 					A2($elm$html$Html$Attributes$style, 'background-color', '#007bff'),
 					A2($elm$html$Html$Attributes$style, 'border-radius', '8px'),
 					A2($elm$html$Html$Attributes$style, 'color', 'white'),
@@ -5732,7 +5905,7 @@ var $author$project$Main$placeNoteView = F2(
 				]),
 			_List_fromArray(
 				[
-					$elm$html$Html$text(placeNote.K)
+					$elm$html$Html$text(placeNote.J)
 				]));
 	});
 var $author$project$Main$NoOp = {$: 6};
@@ -5751,108 +5924,6 @@ var $author$project$Main$preventDragStart = A2(
 	'dragstart',
 	$elm$json$Json$Decode$succeed(
 		_Utils_Tuple2($author$project$Main$NoOp, true)));
-var $elm$json$Json$Encode$bool = _Json_wrap;
-var $elm$json$Json$Encode$int = _Json_wrap;
-var $elm$json$Json$Encode$list = F2(
-	function (func, entries) {
-		return _Json_wrap(
-			A3(
-				$elm$core$List$foldl,
-				_Json_addEntry(func),
-				_Json_emptyArray(0),
-				entries));
-	});
-var $elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v0, obj) {
-					var k = _v0.a;
-					var v = _v0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(0),
-			pairs));
-};
-var $elm$json$Json$Encode$string = _Json_wrap;
-var $author$project$Main$encodePlaceNotes = function (notes) {
-	var encodeNote = function (note) {
-		return $elm$json$Json$Encode$object(
-			_List_fromArray(
-				[
-					_Utils_Tuple2(
-					'id',
-					$elm$json$Json$Encode$int(note.g)),
-					_Utils_Tuple2(
-					'x',
-					$elm$json$Json$Encode$int(note.l)),
-					_Utils_Tuple2(
-					'y',
-					$elm$json$Json$Encode$int(note.m)),
-					_Utils_Tuple2(
-					'width',
-					$elm$json$Json$Encode$int(note.F)),
-					_Utils_Tuple2(
-					'height',
-					$elm$json$Json$Encode$int(note.I)),
-					_Utils_Tuple2(
-					'text',
-					$elm$json$Json$Encode$string(note.K))
-				]));
-	};
-	return A2($elm$json$Json$Encode$list, encodeNote, notes);
-};
-var $elm$json$Json$Encode$null = _Json_encodeNull;
-var $author$project$Main$serializeModel = function (model) {
-	return A2(
-		$elm$json$Json$Encode$encode,
-		2,
-		$elm$json$Json$Encode$object(
-			_List_fromArray(
-				[
-					_Utils_Tuple2(
-					'placeNotes',
-					$author$project$Main$encodePlaceNotes(model.e)),
-					_Utils_Tuple2(
-					'nextPlaceNoteId',
-					$elm$json$Json$Encode$int(model.O)),
-					_Utils_Tuple2(
-					'cameraX',
-					$elm$json$Json$Encode$int(model.p)),
-					_Utils_Tuple2(
-					'cameraY',
-					$elm$json$Json$Encode$int(model.q)),
-					_Utils_Tuple2(
-					'mode',
-					$elm$json$Json$Encode$string(
-						function () {
-							var _v0 = model.x;
-							if (!_v0) {
-								return 'MoveMode';
-							} else {
-								return 'DeletionMode';
-							}
-						}())),
-					_Utils_Tuple2(
-					'inputText',
-					$elm$json$Json$Encode$string(model.r)),
-					_Utils_Tuple2(
-					'allowDrag',
-					$elm$json$Json$Encode$bool(model.G)),
-					_Utils_Tuple2(
-					'selectedPlaceNoteId',
-					function () {
-						var _v1 = model.z;
-						if (!_v1.$) {
-							var id = _v1.a;
-							return $elm$json$Json$Encode$int(id);
-						} else {
-							return $elm$json$Json$Encode$null;
-						}
-					}())
-				])));
-};
 var $elm$html$Html$textarea = _VirtualDom_node('textarea');
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -5887,7 +5958,7 @@ var $author$project$Main$view = function (model) {
 					[
 						$elm$html$Html$Events$onMouseDown($author$project$Main$PreventDrag),
 						$elm$html$Html$Attributes$type_('text'),
-						$elm$html$Html$Attributes$value(model.r),
+						$elm$html$Html$Attributes$value(model.q),
 						$elm$html$Html$Events$onInput($author$project$Main$UpdatePlaceNoteText)
 					]),
 				_List_Nil),
@@ -5898,7 +5969,7 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$Events$onMouseDown($author$project$Main$PreventDrag),
 						$elm$html$Html$Events$onClick(
 						$author$project$Main$AddPlaceNote(
-							_Utils_Tuple2(100 - model.p, 60 - model.q)))
+							_Utils_Tuple2(100 - model.o, 60 - model.p)))
 					]),
 				_List_fromArray(
 					[
@@ -5935,21 +6006,18 @@ var $author$project$Main$view = function (model) {
 					function (placeNote) {
 						return A2($author$project$Main$placeNoteView, model, placeNote);
 					},
-					model.e)),
+					model.c)),
 				A2(
 				$elm$html$Html$textarea,
 				_List_fromArray(
 					[
-						$elm$html$Html$Events$onInput($author$project$Main$UpdateModelFromJson)
+						$elm$html$Html$Events$onInput($author$project$Main$UpdateModelFromJson),
+						$elm$html$Html$Attributes$value(model.C)
 					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						$author$project$Main$serializeModel(model))
-					]))
+				_List_Nil)
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$sandbox(
-	{aJ: $author$project$Main$init, aR: $author$project$Main$update, aS: $author$project$Main$view});
+	{aM: $author$project$Main$init, aU: $author$project$Main$update, aV: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));
