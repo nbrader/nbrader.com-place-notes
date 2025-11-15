@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Browser
 import Html exposing (Html, button, div, input, text, textarea)
-import Html.Attributes exposing (style, type_, value)
+import Html.Attributes exposing (id, style, type_, value)
 import Html.Events exposing (on, onClick, onInput, preventDefaultOn)
 import Json.Decode
 import Json.Encode
@@ -344,7 +344,8 @@ view model =
                     "Delete"
 
         workspaceAttributes =
-            [ style "flex" "1"
+            [ id "workspace"
+            , style "flex" "1"
             , style "position" "relative"
             , style "overflow" "hidden"
             , style "background-color" "#0b1220"
@@ -494,15 +495,15 @@ placeNoteView model placeNote =
 
 mouseMoveDecoder : Json.Decode.Decoder Msg
 mouseMoveDecoder =
-    Json.Decode.map2 (\clientX clientY -> MouseMove (clientX, clientY))
-        (Json.Decode.field "clientX" Json.Decode.int)
-        (Json.Decode.field "clientY" Json.Decode.int)
+    Json.Decode.map2 (\workspaceX workspaceY -> MouseMove (workspaceX, workspaceY))
+        (Json.Decode.field "workspaceX" Json.Decode.int)
+        (Json.Decode.field "workspaceY" Json.Decode.int)
 
 mousePositionDecoder : Json.Decode.Decoder Msg
 mousePositionDecoder =
     Json.Decode.map2 (\x y -> MouseDown (x, y))
-        (Json.Decode.field "clientX" Json.Decode.int)
-        (Json.Decode.field "clientY" Json.Decode.int)
+        (Json.Decode.field "workspaceX" Json.Decode.int)
+        (Json.Decode.field "workspaceY" Json.Decode.int)
 
 -- Touch event decoders for mobile support
 touchMoveDecoder : Json.Decode.Decoder Msg
@@ -515,11 +516,13 @@ touchStartDecoder =
     Json.Decode.at ["touches", "0"] touchCoordinatesDecoder
         |> Json.Decode.map (\(x, y) -> MouseDown (x, y))
 
+-- Touch events don't natively have workspace-relative coordinates
+-- We add workspaceX/workspaceY via JavaScript in the HTML file
 touchCoordinatesDecoder : Json.Decode.Decoder (Int, Int)
 touchCoordinatesDecoder =
     Json.Decode.map2 (\x y -> (x, y))
-        (Json.Decode.field "clientX" Json.Decode.int)
-        (Json.Decode.field "clientY" Json.Decode.int)
+        (Json.Decode.field "workspaceX" Json.Decode.int)
+        (Json.Decode.field "workspaceY" Json.Decode.int)
 
 -- Decoder to ignore the dragstart event's default action
 preventDragStart : Html.Attribute Msg

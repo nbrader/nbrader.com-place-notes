@@ -5764,12 +5764,12 @@ var $author$project$Main$MouseMove = function (a) {
 var $author$project$Main$mouseMoveDecoder = A3(
 	$elm$json$Json$Decode$map2,
 	F2(
-		function (clientX, clientY) {
+		function (workspaceX, workspaceY) {
 			return $author$project$Main$MouseMove(
-				_Utils_Tuple2(clientX, clientY));
+				_Utils_Tuple2(workspaceX, workspaceY));
 		}),
-	A2($elm$json$Json$Decode$field, 'clientX', $elm$json$Json$Decode$int),
-	A2($elm$json$Json$Decode$field, 'clientY', $elm$json$Json$Decode$int));
+	A2($elm$json$Json$Decode$field, 'workspaceX', $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$field, 'workspaceY', $elm$json$Json$Decode$int));
 var $author$project$Main$MouseDown = function (a) {
 	return {$: 2, a: a};
 };
@@ -5780,8 +5780,8 @@ var $author$project$Main$mousePositionDecoder = A3(
 			return $author$project$Main$MouseDown(
 				_Utils_Tuple2(x, y));
 		}),
-	A2($elm$json$Json$Decode$field, 'clientX', $elm$json$Json$Decode$int),
-	A2($elm$json$Json$Decode$field, 'clientY', $elm$json$Json$Decode$int));
+	A2($elm$json$Json$Decode$field, 'workspaceX', $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$field, 'workspaceY', $elm$json$Json$Decode$int));
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 0, a: a};
 };
